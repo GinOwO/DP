@@ -23,7 +23,7 @@ using namespace std;
                 If s[i] is 1, then * can be 1 to 9, i.e 11 to 19, so dp[i] += 9 * dp[i+2]
                 Else if s[i] is 2, then * can be 1 to 6, i.e 21 to 26, so dp[i] += 6 * dp[i+2]
             
-
+        Alternatively as only two previous states are required, we can use three variables instead of an array (2 for past states, 1 for current state)
         
 */
 

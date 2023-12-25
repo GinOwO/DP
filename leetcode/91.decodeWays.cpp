@@ -12,6 +12,8 @@ using namespace std;
         Else dp[i]=dp[i+1] as s[i] can be decoded to a letter
         Then check if two digits can be decoded to a letter, if so, dp[i]+=dp[i+2]
         Return dp[0] as the number of ways to decode the string
+
+        Alternatively as only two previous states are required, we can use three variables instead of an array (2 for past states, 1 for current state)
 */
 
 class Solution {
