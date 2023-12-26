@@ -14,6 +14,8 @@ using namespace std;
         Return dp[0] as the number of ways to decode the string
 
         Alternatively as only two previous states are required, we can use three variables instead of an array (2 for past states, 1 for current state)
+
+        Time: O(n), Space: O(n), Space Optimized: O(1)
 */
 
 class Solution {

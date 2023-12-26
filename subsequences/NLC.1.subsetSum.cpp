@@ -5,6 +5,24 @@ using namespace std;
 /*
     Given an array of non-negative integers, and a value sum, determine if there is a SUBSEQUENCE of the given array with sum equal to given sum.
     
+    Two cases:
+        1. Take the element (iff target-arr[i]>=0)
+        2. Dont take the element
+
+    DP[n+1][target+1] = false
+    Base case: 
+        DP[i][0]=true for all i
+        DP[0][arr[0]]=true
+
+    From i=1 to n-1
+        From x=1 to target
+            DP[i][x] = DP[i-1][x] | (x>=arr[i]?DP[i-1][x-arr[i]]:false)
+    
+    Answer = DP[n-1][target]
+
+    Alternatively, we can use two 1D DP array of size target+1, one for current row and one for previous row.
+
+    Time Complexity: O(n*target), Space Complexity: O(n*target), Space Optimized: O(target)
 
 */
 
@@ -14,7 +32,6 @@ public:
         int n = arr.size();
         vector<bool> dp(target+1, 0), ndp(target+1, 0);
         dp[0]=ndp[0]=dp[arr[0]]=1;
-        
         
         for(int i=1; i<n; i++){
             for(int x=1; x<=target; x++)

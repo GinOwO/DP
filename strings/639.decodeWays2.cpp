@@ -28,6 +28,8 @@ using namespace std;
                 Else if s[i] is 2, then * can be 1 to 6, i.e 21 to 26, so dp[i] += 6 * dp[i+2]
             
         Alternatively as only two previous states are required, we can use three variables instead of an array (2 for past states: dp[i+1], dp[i+2], 1 for current state: dp[i])
+
+        Time: O(n), Space: O(1)
 */
 
 class Solution {
