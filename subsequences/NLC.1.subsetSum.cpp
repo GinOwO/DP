@@ -89,6 +89,6 @@ public:
 
 int main(){
     Solution s;
-    cout << s.isSubsetSum({3, 34, 4, 12, 5, 2}, 30) << endl;
+    cout << s.isSubsetSum({100}, 50) << endl;
     return 0;
 }
