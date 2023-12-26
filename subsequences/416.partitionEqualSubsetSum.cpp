@@ -23,12 +23,12 @@ public:
         int n = arr.size();
         vector<bool> dp(target+1, 0), ndp(target+1, 0);
 
-        dp[0]=ndp[0]=1;
-        if(arr[0]<=target) dp[arr[0]]=ndp[arr[0]]=1;
+        dp[0]=1;
+        if(arr[0]<=target) dp[arr[0]]=1;
         
         for(int i=1; i<n; i++){
-            for(int x=arr[i]; x<=target; x++)
-                ndp[x] = dp[x] | dp[x-arr[i]];
+            for(int x=0; x<=target; x++)
+                ndp[x] = dp[x] | (x>=arr[i]?dp[x-arr[i]]:false);
             dp=ndp;
         }
         return dp[target];
