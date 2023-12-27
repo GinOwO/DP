@@ -74,7 +74,7 @@ public:
     int knapsack(int W, vector<int> wt, vector<int> val, int n){ 
         // vector<vector<int>> dp(n+1, vector<int>(W+1, -1));
         // return knapsackRec(0, W, wt, val, n, dp);
-        return knapsackDP(W, wt, val, n);
+        return knapsackDPSpace(W, wt, val, n);
     }
 };
 
