@@ -1,0 +1,386 @@
+/* OwO */
+
+/* CSS reset And General stuff */
+
+* {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+}
+
+img,
+picture,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+}
+
+:root {
+    color-scheme: dark light;
+    scroll-behavior: smooth;
+    font-family: "Raleway", "Noto Sans JP", "Open Sans", "Inter", sans-serif;
+    font-size: 16px;
+
+    /* These are dark mode ones */
+    --bg-color: rgb(61, 57, 60);
+    --text-color: aliceblue;
+
+    --scroll-color: rgb(255, 255, 255);
+    --scroll-bg-color: rgb(0, 0, 0);
+
+    --navbar-background: rgb(0, 0, 0);
+    --navbar-text-color: aliceblue;
+    --navbar-logo-path: aliceblue;
+
+    --category-background: rgb(20, 21, 21);
+
+    --question-background: rgb(204, 206, 214);
+    --question-text-color: rgb(0, 0, 0);
+}
+
+/* Theme color changes */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-color: rgb(220, 220, 220);
+        --text-color: rgb(0, 0, 0);
+        --scroll-color: rgb(255, 255, 255);
+        --scroll-bg-color: rgb(0, 0, 0);
+        --navbar-logo-path: rgb(0, 0, 0);
+        --category-background: rgb(235, 235, 235);
+
+        --question-background: rgb(97, 92, 92);
+        --question-text-color: rgb(255, 255, 255);
+    }
+}
+
+.debug-text {
+    font-size: 5rem;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 1.2rem;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* Scroll bar for firefox */
+html {
+    overflow: scroll;
+    scrollbar-color: var(--scroll-color) var(--scroll-bg-color);
+    scrollbar-width: auto;
+}
+
+/* Scrollbar for webkit browsers */
+body::-webkit-scrollbar {
+    width: 0.15rem;
+}
+
+body::-webkit-scrollbar-track {
+    background: var(--scroll-bg-color);
+}
+
+body::-webkit-scrollbar-thumb {
+    background: var(--scroll-color);
+}
+/* ------------------------------------------------------------------------------- */
+
+/* Media Queries for resizing */
+@media only screen and (max-width: 600px) {
+    :root {
+        font-size: 12px;
+    }
+
+    .navbar {
+        width: 3.7rem;
+        height: 100%;
+    }
+
+    .accordion li {
+        width: 82vw;
+        margin: 5px;
+        padding: 10px;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    :root {
+        font-size: 14px;
+    }
+
+    .navbar {
+        width: 3.7rem;
+        height: 100%;
+    }
+
+    .accordion li {
+        width: 85vw;
+        margin: 5px;
+        padding: 10px;
+    }
+}
+
+@media only screen and (min-width: 1100px) {
+    :root {
+        font-size: 16px;
+    }
+
+    .navbar {
+        width: 3vw;
+        height: 100%;
+    }
+
+    .accordion li {
+        width: 93vw;
+        margin: 5px;
+        padding: 10px;
+    }
+}
+
+/* ------------------------------------------------------------------------------- */
+/* Content */
+main {
+    padding-left: 1rem;
+    margin-left: 3rem;
+    width: 97vw;
+}
+
+/* Set Basic properties of navbar and give it the same color as bg */
+.navbar {
+    width: 3.7rem;
+    height: 100%;
+    position: fixed;
+    background: var(--bg-color);
+    color: var(--navbar-text-color);
+    transition: all 0.25s ease-out;
+    z-index: 100;
+}
+
+/* Remove default list styles and make it flex */
+.navbar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+/* Make navbar items take up full width */
+.nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+/* Move last button to bottom of screen */
+/* .nav-item:last-child {
+    margin-top: auto;
+} */
+
+/* Remove text decorations in a tags */
+.nav-link {
+    display: flex;
+    align-items: center;
+    height: 5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease-out;
+}
+
+/* Hide the text when not hovering over */
+.nav-link-text {
+    left: -20rem;
+    position: absolute;
+    transition: all 0.2s ease-out;
+}
+
+.nav-logo {
+    height: 2.5rem;
+    width: 4rem;
+}
+
+/* This is for the >> sign */
+#nav-item-logo {
+    height: 4.5rem;
+    display: flex;
+    align-items: right;
+    justify-content: right;
+    /* padding-top: 1rem; */
+    transition: all 0.2s ease-out;
+}
+
+/* Make the >> sign take up full width */
+.navbar-logo-svg {
+    fill: var(--navbar-logo-path);
+    width: 100%;
+    height: 100%;
+}
+
+/* Color for the >> sign */
+.navbar-logo-path {
+    fill: var(--navbar-logo-path);
+}
+
+/* For the extra (maybe) will be added navbar icons */
+.navbar-icon-svg {
+    display: none;
+    width: 45%;
+    height: 45%;
+}
+
+/* Color for the extra (maybe) will be added navbar icons */
+.navbar-icon-path {
+    fill: white;
+}
+
+/* Hover Effects */
+/* Make the background visible and the navbar extends */
+.navbar:hover {
+    background: var(--navbar-background);
+    background-color: var(--navbar-background);
+    width: 12rem;
+}
+
+/* Make BG visible */
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Make Text visible */
+.navbar:hover .nav-link-text {
+    display: block;
+    position: relative;
+    left: 0;
+    padding-left: 1rem;
+    text-rendering: optimizeLegibility;
+    font-weight: 400;
+    font-size: 1.15rem;
+}
+
+/* Make the extra (maybe) will be added navbar icons visible */
+.navbar:hover .navbar-icon-svg {
+    display: block;
+}
+
+/* Flip on Y axis */
+.navbar:hover #nav-item-logo {
+    transform: rotateY(-180deg);
+}
+
+/* Change color of >> sign to white on hover regardless of theme*/
+.navbar:hover .navbar-logo-path {
+    fill: white;
+}
+
+/* --------------------------------------------------------------------- */
+
+/* Content */
+.primary-category {
+    background: var(--category-background);
+    transition: all 0.2s ease-out;
+    margin-bottom: 1rem;
+}
+
+.category-title {
+    font-size: 3rem;
+    font-weight: 500;
+    padding: 2rem;
+    text-rendering: optimizeLegibility;
+    text-align: center;
+}
+
+.category-div {
+    display: flex;
+    flex-direction: row;
+}
+
+.accordion {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.accordion li {
+    list-style: none;
+    border-radius: 5px;
+    background: var(--question-background);
+    color: var(--question-text-color);
+    transition: all 0.2s ease-out;
+}
+
+.question-title {
+    font-size: 1.6rem;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    padding: auto;
+    transition: all 0.2s ease-out;
+}
+
+.question-title::after {
+    content: "+";
+    transition: all 0.2s ease-out;
+    margin-left: auto;
+    font-size: 2.1rem;
+    font-weight: 600;
+    position: relative;
+    top: -0.5rem;
+}
+
+.accordion input[type="checkbox"] {
+    display: none;
+}
+
+.code-content {
+    display: hidden;
+    height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.question input[type="checkbox"]:checked + label + .code-content {
+    height: 101vh;
+    display: block;
+    padding: auto;
+}
+
+.question input[type="checkbox"]:checked + label::after {
+    transition: all 0.5s ease-out;
+    margin-left: auto;
+    font-size: 3rem;
+    font-weight: 600;
+    transform: rotateZ(-45deg);
+}
+
+.editor-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.editor-contents {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    font-size: 1.1rem;
+}
+
+/* --------------------------------------------------------------------- */

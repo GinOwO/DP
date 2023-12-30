@@ -4,6 +4,7 @@ import json
 import sys
 import os
 import re
+import datetime
 
 P = re.compile(r"/(NLC)?\.?(\d+)\.(\w+)\.cpp")
 
@@ -35,6 +36,7 @@ def main():
             })
         print(f"Processing: {cnt}/{len(args)-1}\t ",end='\r')
     print()
+    output["built on"] = str(datetime.datetime.now())
     with open('html/scripts/URIs.json', 'w') as f:
         f.write(json.dumps(output, indent=4, sort_keys=True))
     print("Dumped to html/scripts/URIs.json")
