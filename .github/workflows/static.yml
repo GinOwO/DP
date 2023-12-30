@@ -2,8 +2,15 @@ name: Deploy static content to Pages
 
 on:
   push:
-    branches: ["main"]
-    
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+      - 'html/**'
+      - '.gitignore'
+      - '.github/**'
+      - '.git/**'
+      - '.vscode/**'
+      - 'URIs.json'
   workflow_dispatch:
 
 permissions:
@@ -24,6 +31,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install dependencies
+        run: |
+          npm install leetcode-query
+      - name: Build URIs
+        run: |
+          bash ./html/scripts/buildURI.sh
+      - name: Commit URIs to the repo
+        run: |
+          git config --global user.name "${{ secrets.USER_NAME }}"
+          git config --global user.email "${{ secrets.EMAIL }}}}"
+          git add .
+          git commit -m "Update URIs"
+          git push
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
