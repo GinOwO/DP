@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { LeetCode, Credential } = require('leetcode-query');
 const fs = require('fs');
 
@@ -19,8 +21,10 @@ const factory = (x) => {
 const fn = async () => {
     let metadata = {};
     const leetcode = new LeetCode();
+
     try{
         for(let i=0; i<3000; i+=30) {
+            process.stdout.write(`Fetching: ${i} to ${i + 30}\t(${i/30}%)\r`);
             const glob = await leetcode.problems({offset: i, limit:30});
             for(let x of glob.questions) {
                 metadata = {...metadata, ...factory(x)};
@@ -28,8 +32,10 @@ const fn = async () => {
         }
     }
     catch(e) {}
+
+    console.log(); // Newline
     const mdata = JSON.stringify(metadata, null, 4);
-    fs.writeFileSync('metadata.json', mdata, 'utf8');
+    fs.writeFileSync('html/scripts/metadata.json', mdata, 'utf8');
 };
 
 fn();
