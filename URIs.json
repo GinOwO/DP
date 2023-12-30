@@ -1,0 +1,427 @@
+{
+    "1048": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Hash Table",
+            "Two Pointers",
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Longest String Chain",
+        "TitleSlug": "longest-string-chain",
+        "URI": "./subsequences/1048.longestStringChain.cpp"
+    },
+    "1092": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Shortest Common Supersequence ",
+        "TitleSlug": "shortest-common-supersequence",
+        "URI": "./strings/1092.shortestCommonSupersequence.cpp"
+    },
+    "1143": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Longest Common Subsequence",
+        "TitleSlug": "longest-common-subsequence",
+        "URI": "./strings/1143.longestCommonSubsequence.cpp"
+    },
+    "115": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Distinct Subsequences",
+        "TitleSlug": "distinct-subsequences",
+        "URI": "./strings/115.distinctSubsequences.cpp"
+    },
+    "1155": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Dynamic Programming"
+        ],
+        "Title": "Number of Dice Rolls With Target Sum",
+        "TitleSlug": "number-of-dice-rolls-with-target-sum",
+        "URI": "./combinatorial/1155.numDiceRollsTargetSum.cpp"
+    },
+    "120": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Triangle",
+        "TitleSlug": "triangle",
+        "URI": "./grid/120.triangle.cpp"
+    },
+    "122": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Greedy"
+        ],
+        "Title": "Best Time to Buy and Sell Stock II",
+        "TitleSlug": "best-time-to-buy-and-sell-stock-ii",
+        "URI": "./array/1D/122.buyAndSellStock2.cpp"
+    },
+    "123": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Best Time to Buy and Sell Stock III",
+        "TitleSlug": "best-time-to-buy-and-sell-stock-iii",
+        "URI": "./array/1D/123.buyAndSellStock3.cpp"
+    },
+    "1312": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Minimum Insertion Steps to Make a String Palindrome",
+        "TitleSlug": "minimum-insertion-steps-to-make-a-string-palindrome",
+        "URI": "./strings/1312.minInsertionsToMakePalindrome.cpp"
+    },
+    "1463": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Cherry Pickup II",
+        "TitleSlug": "cherry-pickup-ii",
+        "URI": "./grid/1463.cherryPickup2.cpp"
+    },
+    "188": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Best Time to Buy and Sell Stock IV",
+        "TitleSlug": "best-time-to-buy-and-sell-stock-iv",
+        "URI": "./array/1D/188.buyAndSellStock4.cpp"
+    },
+    "198": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "House Robber",
+        "TitleSlug": "house-robber",
+        "URI": "./array/1D/198.houseRobber.cpp"
+    },
+    "213": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "House Robber II",
+        "TitleSlug": "house-robber-ii",
+        "URI": "./array/1D/213.houseRobber2.cpp"
+    },
+    "256": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Paint House",
+        "TitleSlug": "paint-house",
+        "URI": "./array/2D/256.paintHouses.cpp"
+    },
+    "300": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Binary Search",
+            "Dynamic Programming"
+        ],
+        "Title": "Longest Increasing Subsequence",
+        "TitleSlug": "longest-increasing-subsequence",
+        "URI": "./subsequences/300.lengthOfLIS.cpp"
+    },
+    "309": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Best Time to Buy and Sell Stock with Cooldown",
+        "TitleSlug": "best-time-to-buy-and-sell-stock-with-cooldown",
+        "URI": "./array/1D/309.buyAndSellStockWithCooldown.cpp"
+    },
+    "332": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Depth-First Search",
+            "Graph",
+            "Eulerian Circuit"
+        ],
+        "Title": "Reconstruct Itinerary",
+        "TitleSlug": "reconstruct-itinerary",
+        "URI": "./subsequences/332.coinChange.cpp"
+    },
+    "368": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Math",
+            "Dynamic Programming",
+            "Sorting"
+        ],
+        "Title": "Largest Divisible Subset",
+        "TitleSlug": "largest-divisible-subset",
+        "URI": "./subsequences/368.largestDivisibleSubset.cpp"
+    },
+    "416": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Partition Equal Subset Sum",
+        "TitleSlug": "partition-equal-subset-sum",
+        "URI": "./subsequences/416.partitionEqualSubsetSum.cpp"
+    },
+    "44": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "String",
+            "Dynamic Programming",
+            "Greedy",
+            "Recursion"
+        ],
+        "Title": "Wildcard Matching",
+        "TitleSlug": "wildcard-matching",
+        "URI": "./strings/44.wildMatching.cpp"
+    },
+    "494": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Backtracking"
+        ],
+        "Title": "Target Sum",
+        "TitleSlug": "target-sum",
+        "URI": "./subsequences/494.targetSum.cpp"
+    },
+    "516": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Longest Palindromic Subsequence",
+        "TitleSlug": "longest-palindromic-subsequence",
+        "URI": "./strings/516.longestPalindromicSubstring.cpp"
+    },
+    "518": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Coin Change II",
+        "TitleSlug": "coin-change-ii",
+        "URI": "./subsequences/518.coinChange2.cpp"
+    },
+    "583": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Delete Operation for Two Strings",
+        "TitleSlug": "delete-operation-for-two-strings",
+        "URI": "./strings/583.minDeletionsToConvert.cpp"
+    },
+    "62": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Math",
+            "Dynamic Programming",
+            "Combinatorics"
+        ],
+        "Title": "Unique Paths",
+        "TitleSlug": "unique-paths",
+        "URI": "./grid/62.uniquePaths.cpp"
+    },
+    "63": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Unique Paths II",
+        "TitleSlug": "unique-paths-ii",
+        "URI": "./grid/63.uniquePaths2.cpp"
+    },
+    "639": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Decode Ways II",
+        "TitleSlug": "decode-ways-ii",
+        "URI": "./strings/639.decodeWays2.cpp"
+    },
+    "64": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Minimum Path Sum",
+        "TitleSlug": "minimum-path-sum",
+        "URI": "./grid/64.minSumPath.cpp"
+    },
+    "673": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Binary Indexed Tree",
+            "Segment Tree"
+        ],
+        "Title": "Number of Longest Increasing Subsequence",
+        "TitleSlug": "number-of-longest-increasing-subsequence",
+        "URI": "./subsequences/673.numberOfLIS.cpp"
+    },
+    "714": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Greedy"
+        ],
+        "Title": "Best Time to Buy and Sell Stock with Transaction Fee",
+        "TitleSlug": "best-time-to-buy-and-sell-stock-with-transaction-fee",
+        "URI": "./array/1D/714.buyAndSellStockWithFee.cpp"
+    },
+    "72": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Edit Distance",
+        "TitleSlug": "edit-distance",
+        "URI": "./strings/72.editDistances.cpp"
+    },
+    "741": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Cherry Pickup",
+        "TitleSlug": "cherry-pickup",
+        "URI": "./grid/741.cherryPickup.cpp"
+    },
+    "746": {
+        "Difficulty": "Easy",
+        "Tags": [
+            "Array",
+            "Dynamic Programming"
+        ],
+        "Title": "Min Cost Climbing Stairs",
+        "TitleSlug": "min-cost-climbing-stairs",
+        "URI": "./array/1D/746.minCostClimbStairs.cpp"
+    },
+    "91": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "String",
+            "Dynamic Programming"
+        ],
+        "Title": "Decode Ways",
+        "TitleSlug": "decode-ways",
+        "URI": "./strings/91.decodeWays.cpp"
+    },
+    "931": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Minimum Falling Path Sum",
+        "TitleSlug": "minimum-falling-path-sum",
+        "URI": "./grid/931.minimumFallingPathSum.cpp"
+    },
+    "NLC": [
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "matrixChainMultiplication",
+            "URI": "./partition/NLC.1.matrixChainMultiplication.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "knapsack01",
+            "URI": "./subsequences/NLC.2.knapsack01.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "unboundedKnapsack",
+            "URI": "./subsequences/NLC.3.unboundedKnapsack.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "printingLIS",
+            "URI": "./subsequences/NLC.5.printingLIS.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "subsetSum",
+            "URI": "./subsequences/NLC.1.subsetSum.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "longestBitonicSubsequence",
+            "URI": "./subsequences/NLC.6.longestBitonicSubsequence.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "logCutting",
+            "URI": "./subsequences/NLC.4.logCutting.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "LCSubstring",
+            "URI": "./strings/NLC.2.LCSubstring.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "displayLCS",
+            "URI": "./strings/NLC.1.displayLCS.cpp"
+        }
+    ]
+}
