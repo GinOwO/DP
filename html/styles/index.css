@@ -355,6 +355,19 @@ main {
         height: 100%;
         width: 100%;
     }
+
+    .accordion {
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .accordion li {
+        border-radius: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+    }
 }
 
 @media only screen and (min-width: 600px) {
