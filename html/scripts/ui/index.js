@@ -111,7 +111,8 @@ function makeQuestion(id, title) {
         <div class="code-content">
             <div class="editor-container">
                 <div class="editor-contents" id="editor-${id}">
-                If you're seeing this something went wrong!
+                Loading...<br /> This will be done in a few seconds.<br />
+                If you're seeing this for a long time something went wrong or poor connectivity!
                 </div>
             </div>
         </div>
