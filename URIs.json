@@ -82,6 +82,17 @@
         "TitleSlug": "best-time-to-buy-and-sell-stock-iii",
         "URI": "./array/1D/123.buyAndSellStock3.cpp"
     },
+    "1277": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Count Square Submatrices with All Ones",
+        "TitleSlug": "count-square-submatrices-with-all-ones",
+        "URI": "./array/2D/1277.countSubmatricesWithOnes.cpp"
+    },
     "1312": {
         "Difficulty": "Hard",
         "Tags": [
@@ -102,6 +113,17 @@
         "Title": "Cherry Pickup II",
         "TitleSlug": "cherry-pickup-ii",
         "URI": "./grid/1463.cherryPickup2.cpp"
+    },
+    "1547": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Sorting"
+        ],
+        "Title": "Minimum Cost to Cut a Stick",
+        "TitleSlug": "minimum-cost-to-cut-a-stick",
+        "URI": "./partition/1547.minCostToCut.cpp"
     },
     "188": {
         "Difficulty": "Hard",
@@ -424,5 +446,5 @@
             "URI": "./strings/NLC.1.displayLCS.cpp"
         }
     ],
-    "built on": "2023-12-31 15:38:42.931417"
+    "built on": "2024-01-04 15:04:38.074514"
 }

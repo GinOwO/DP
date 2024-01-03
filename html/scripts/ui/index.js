@@ -41,6 +41,7 @@
  *
  * @property {Object<Question>} questions
  * @property {Object<Category>} categories
+ * @property {string} buildDate
  * @property {Set<String>} openedQuestions
  * @property {string} theme
  * @property {string} pathPrefix
@@ -49,6 +50,7 @@
 
 let questions = {};
 let categories = {};
+let buildDate = "";
 let openedQuestions = new Set();
 const theme = ["chaos", "xcode"][
     window.matchMedia("(prefers-color-scheme: light)").matches ? 1 : 0
@@ -174,6 +176,7 @@ function makeQuestion(id, title, diff, tags) {
 document.addEventListener("DOMContentLoaded", async () => {
     questions = await loadQuestions();
     categories = getCategories(questions);
+    buildDate = questions["built on"].split('.')[0];
 
     createCategories();
     createQuestions();
@@ -255,6 +258,11 @@ function createCategories() {
         html += makeCategory(categories[category], c);
         nv += makeNavbar(categories[category], c);
     }
+    nv += `<li class="nav-item" id="built-on">
+    <a href="https://github.com/ginOwO/DP" class="nav-link">
+    <span class="nav-link-text" id="github-url">Built On:<br />${buildDate}</span>
+    </a>
+    </li>`;
     document.getElementById("navbar").innerHTML += nv;
     document.getElementById("main-content").innerHTML += html;
 }

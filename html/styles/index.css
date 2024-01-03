@@ -127,9 +127,9 @@ main {
 }
 
 /* Move last button to bottom of screen */
-/* .nav-item:last-child {
+.nav-item:last-child {
     margin-top: auto;
-} */
+}
 
 /* Remove text decorations in a tags */
 .nav-link {
@@ -224,6 +224,14 @@ main {
 /* Change color of >> sign to white on hover regardless of theme*/
 .navbar:hover .navbar-logo-path {
     fill: white;
+}
+
+#github-url{
+    transition: all 0.2s ease-out;
+}
+
+#github-url:hover {
+    color: aqua;
 }
 
 /* --------------------------------------------------------------------- */
