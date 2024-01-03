@@ -288,8 +288,32 @@ main {
     top: -0.5rem;
 }
 
+.question input[type="checkbox"]:checked + .question-title {
+    margin-bottom: -1rem;
+}
+
+
 .accordion input[type="checkbox"] {
     display: none;
+}
+
+.metatags {
+    display: none;
+}
+
+.metatags img {
+    margin-right: 0.5rem;
+    padding: auto;
+}
+
+.question input[type="checkbox"]:checked + label + div {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding: auto;
+    margin: auto;
+    margin-bottom: 1rem;
+    margin-top: 0;
 }
 
 .code-content {
@@ -299,7 +323,7 @@ main {
     transition: all 0.3s ease-in-out;
 }
 
-.question input[type="checkbox"]:checked + label + .code-content {
+.question input[type="checkbox"]:checked + label + div + .code-content {
     height: 101vh;
     display: block;
     padding: auto;
@@ -405,3 +429,4 @@ main {
 }
 
 /* --------------------------------------------------------------------- */
+

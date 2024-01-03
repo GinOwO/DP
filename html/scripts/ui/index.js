@@ -20,6 +20,9 @@
             <label class="question-title" for="q${id}">
             ${title}
             </label>
+            <div class="metatags" id="metatags-${id}">
+                ${diff}${tags}
+            </div>
             <div class="code-content">
                 <div class="editor-container">
                     <div id="editor-${id}">
@@ -52,6 +55,36 @@ const theme = ["chaos", "xcode"][
 ];
 let pathPrefix = "";
 let mostRecent = "";
+const badges = {
+    Easy: `<img alt="Easy " src="https://img.shields.io/badge/Easy-ffff0f.svg?style=for-the-badge">`,
+    Medium: `<img alt="Medium " src="https://img.shields.io/badge/Medium-ff8000.svg?style=for-the-badge">`,
+    Hard: `<img alt="Hard " src="https://img.shields.io/badge/Hard-ff0000.svg?style=for-the-badge">`,
+    Array: `<img alt="Array " src="https://img.shields.io/badge/Array-ffffff.svg?style=for-the-badge">`,
+    String: `<img alt="String " src="https://img.shields.io/badge/String-429bff.svg?style=for-the-badge">`,
+    "Dynamic Programming": `<img alt="Dynamic Programming " src="https://img.shields.io/badge/-Dynamic%20Programming-ff9b42.svg?style=for-the-badge">`,
+    "Two Pointers": `<img alt="Two Pointers " src="https://img.shields.io/badge/-Two%20Pointers-9b42ff.svg?style=for-the-badge">`,
+    Matrix: `<img alt="Matrix " src="https://img.shields.io/badge/-Matrix-ff42f5.svg?style=for-the-badge">`,
+    "Binary Search": `<img alt="Binary Search " src="https://img.shields.io/badge/-Binary%20Search-ff9b42.svg?style=for-the-badge">`,
+    Tree: `<img alt="Tree " src="https://img.shields.io/badge/-Tree-2c6e49.svg?style=for-the-badge">`,
+    "Binary Search Tree": `<img alt="Binary Search Tree " src="https://img.shields.io/badge/-Binary%20Search%20Tree-03440c.svg?style=for-the-badge">`,
+    "Depth-First Search": `<img alt="Depth First Search " src="https://img.shields.io/badge/-Depth--First%20Search-ffc9b9.svg?style=for-the-badge">`,
+    Sorting: `<img alt="Sorting " src="https://img.shields.io/badge/-Sorting-fdc500.svg?style=for-the-badge">`,
+    "Hash Table": `<img alt="Hash Table " src="https://img.shields.io/badge/-Hash%20Table-3454d1.svg?style=for-the-badge">`,
+    Math: `<img alt="Math " src="https://img.shields.io/badge/-Math-d1345b.svg?style=for-the-badge">`,
+    Greedy: `<img alt="Greedy " src="https://img.shields.io/badge/-Greedy-ff92c2.svg?style=for-the-badge">`,
+    Backtracking: `<img alt="Backtracking " src="https://img.shields.io/badge/-Backtracking-ffeef2.svg?style=for-the-badge">`,
+    "Breadth-First Search": `<img alt="Breadth First Search " src="https://img.shields.io/badge/-Breadth--First%20Search-ff9b42.svg?style=for-the-badge">`,
+    Graph: `<img alt="Graph " src="https://img.shields.io/badge/-Graph-7a9b76.svg?style=for-the-badge">`,
+    "Eulerian Circuit": `<img alt="Eulerian Circuit " src="https://img.shields.io/badge/-Eulerian%20Circuit-780000.svg?style=for-the-badge">`,
+    Recursion: `<img alt="Recursion " src="https://img.shields.io/badge/-Recursion-6dd6da.svg?style=for-the-badge">`,
+    "Binary Indexed Tree": `<img alt="Binary Indexed Tree " src="https://img.shields.io/badge/-Binary%20Indexed%20Tree-058e3f.svg?style=for-the-badge">`,
+    "Segment Tree": `<img alt="Segment Tree " src="https://img.shields.io/badge/-Segment%20Tree-04773b.svg?style=for-the-badge">`,
+    Combinatorics: `<img alt="Combinatorics " src="https://img.shields.io/badge/-Combinatorics-4a5759.svg?style=for-the-badge">`,
+};
+
+/**
+ * Hex for orange: #ff8000
+ */
 
 /**
  * Creates a category entry HTML
@@ -98,16 +131,21 @@ function makeNavbar(id, title) {
  *
  * @param {string} id
  * @param {string} title
+ * @param {string} diff
+ * @param {Object<string>} tags
  * @returns {string}
  */
 
-function makeQuestion(id, title) {
+function makeQuestion(id, title, diff, tags) {
     return `
     <li class="question" id="ID-${id}">
         <input type="checkbox" name="quest" id="q${id}" onclick="toggleQuestion(this)" />
         <label class="question-title" for="q${id}">
             ${id}. ${title}
         </label>
+        <div class="metatags" id="metatags-${id}">
+            ${diff}${tags}
+        </div>
         <div class="code-content">
             <div class="editor-container">
                 <div class="editor-contents" id="editor-${id}">
@@ -230,7 +268,12 @@ function createQuestions() {
     for (let key of arr) {
         let category = questions[key]["URI"].split("/")[1];
         let title = questions[key]["Title"];
-        let html = makeQuestion(key, title);
+        let diff = questions[key]["Difficulty"];
+        let tags = questions[key]["Tags"].map((tag) => {
+            if(badges.hasOwnProperty(tag)) return badges[tag];
+            return `<span class="tag">${tag}</span>`;
+        }).join("");
+        let html = makeQuestion(key, title, badges[diff], tags);
         document.getElementById(`accordion${categories[category]}`).innerHTML +=
             html;
     }
