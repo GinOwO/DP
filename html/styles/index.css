@@ -411,6 +411,14 @@ main {
         transition: all 0.2s ease-out;
         padding-left: 1rem;
     }
+
+    .question input[type="checkbox"]:checked + label + div + .code-content {
+        height: 101vh;
+        display: block;
+        padding: auto;
+        margin-top: -1rem;
+    }
+    
 }
 
 @media only screen and (min-width: 600px) {
