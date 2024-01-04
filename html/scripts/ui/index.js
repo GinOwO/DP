@@ -88,6 +88,7 @@ const badges = {
     Combinatorics: `<img alt="Combinatorics " src="https://img.shields.io/badge/-Combinatorics-4a5759.svg?style=for-the-badge">`,
     "Brute Force": `<img alt="Brute Force " src="https://img.shields.io/badge/-Brute%20Force-4a5759.svg?style=for-the-badge">`,
     "Eulerian Circuit": `<img alt="Eulerian Circuit " src="https://img.shields.io/badge/-Eulerian%20Circuit-780000.svg?style=for-the-badge">`,
+    NLC: `<img alt="Non Leetcode " src="https://img.shields.io/badge/-Non%20Leetcode-71f45b.svg?style=for-the-badge">`,
 };
 
 /**
@@ -103,6 +104,7 @@ const badges = {
  */
 
 function makeCategory(id, title) {
+    if (title === "NLC") title = "Non Leetcode";
     return `
     <div class="primary-category" id="category-${id}">
     <div class="category-div">
@@ -123,6 +125,7 @@ function makeCategory(id, title) {
  */
 
 function makeNavbar(id, title) {
+    if (title === "NLC") title = "Non Leetcode";
     return `
     <li class="nav-item">
         <a href="#category-${id}" class="nav-link">
@@ -176,7 +179,7 @@ function makeQuestion(id, title, diff, tags) {
 document.addEventListener("DOMContentLoaded", async () => {
     questions = await loadQuestions();
     categories = getCategories(questions);
-    buildDate = questions["built on"].split('.')[0];
+    buildDate = questions["built on"].split(".")[0];
 
     createCategories();
     createQuestions();
@@ -240,7 +243,7 @@ function getCategories(questions) {
     for (let category of st) {
         obj[category] = String(idx++);
     }
-
+    obj["NLC"] = String(idx);
     return obj;
 }
 
@@ -279,6 +282,7 @@ function createQuestions() {
         if (key !== "NLC" && key !== "built on") arr.push(key);
     }
     arr.sort((a, b) => Number(a) - Number(b));
+
     for (let key of arr) {
         let category = questions[key]["URI"].split("/")[1];
         let title = questions[key]["Title"];
@@ -290,6 +294,28 @@ function createQuestions() {
             })
             .join("");
         let html = makeQuestion(key, title, badges[diff], tags);
+        document.getElementById(`accordion${categories[category]}`).innerHTML +=
+            html;
+    }
+
+    let idx = 1;
+    for (let obj of questions["NLC"]) {
+        let category = "NLC";
+        let key = idx++;
+        let title = obj["Title"];
+        let diff = "Medium";
+        let tags = obj["Tags"];
+        tags.push("NLC");
+        let cat = obj["URI"].split("/")[1];
+        tags.push(cat[0].toUpperCase() + cat.slice(1));
+        tags = tags
+            .map((tag) => {
+                if (badges.hasOwnProperty(tag)) return badges[tag];
+                tag.replace(" ", "%20");
+                return `<img alt="${tag} " src="https://img.shields.io/badge/${tag}-000000.svg?style=for-the-badge">`;
+            })
+            .join("");
+        let html = makeQuestion("N" + key, title, badges[diff], tags);
         document.getElementById(`accordion${categories[category]}`).innerHTML +=
             html;
     }
@@ -330,7 +356,7 @@ function setupEditor(id, code) {
     editor.session.setUseWrapMode(true);
 
     // Overscroll half
-    editor.setOption("scrollPastEnd", 0.3);
+    editor.setOption("scrollPastEnd", 0.15);
 
     // Disable print margin
     editor.setShowPrintMargin(false);
@@ -350,7 +376,9 @@ function setupEditor(id, code) {
  */
 
 function getCode(id) {
-    let uri = questions[id]["URI"];
+    let uri = "";
+    if (id[0] === "N") uri = questions["NLC"][Number(id.slice(1)) - 1]["URI"];
+    else uri = questions[id]["URI"];
     if (pathPrefix !== "") uri = pathPrefix + uri.slice(1);
     return fetch(uri).then((res) => res.text());
 }
