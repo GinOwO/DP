@@ -1,3 +1,3 @@
-# DP
+# OwO
 
-NLC = Non LeetCode 
+Visit [this](https://github.com/GinOwO/DP) instead of the repo.
