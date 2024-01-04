@@ -1,3 +1,3 @@
 # OwO
 
-Visit [this](https://github.com/GinOwO/DP) instead of the repo.
+Visit [this](https://ginowo.github.io/DP/) instead of the repo.
