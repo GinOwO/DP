@@ -24,7 +24,7 @@ video {
     font-size: 16px;
 
     /* These are dark mode ones */
-    --bg-color: rgb(61, 57, 60);
+    --bg-color: #1e1e1e;
     --text-color: aliceblue;
 
     --scroll-color: rgb(255, 255, 255);
@@ -34,7 +34,7 @@ video {
     --navbar-text-color: aliceblue;
     --navbar-logo-path: aliceblue;
 
-    --category-background: rgb(20, 21, 21);
+    --category-background: rgb(0, 0, 0);
 
     --question-background: rgb(204, 206, 214);
     --question-text-color: rgb(0, 0, 0);
@@ -306,6 +306,7 @@ main {
 
 .metatags {
     display: none;
+    overflow-x: scroll;
 }
 
 .metatags img {
@@ -398,6 +399,17 @@ main {
         padding: 0;
         height: 100%;
         width: 100%;
+    }
+
+    .question-title {
+        font-size: 1.3rem;
+    }
+
+    .metatags{
+        transform-origin: top left;
+        transform: scale(0.8);
+        transition: all 0.2s ease-out;
+        padding-left: 1rem;
     }
 }
 
