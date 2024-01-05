@@ -95,7 +95,7 @@ using namespace std;
                   | 2 | 3 | 7  |
             res = | 9 | 5 | 10 | 11 |
 
-            Now the link becomes 11 <- 10 <- 7 <- 3 <- 2.
+            Now the link becomes 11 <- 7 <- 3 <- 2.
 
             The answer is the size of res/number of stacks, i.e 4.
 
