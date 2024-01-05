@@ -55,9 +55,9 @@ using namespace std;
         Intution: 
         (P.S: By look I mean finding the lowerbound as defined above. It by definition will give an index equal 
         to size of array if the element is bigger than all elements in the array)
-        
+
         Think of res as a an array of stacks, where the top of the stack is the smallest element and
-        the all elements of the ith stack is smaller than the elements of the (i+1)th stack:
+        the top element of the ith stack is smaller than the top element of the (i+1)th stack:
 
             At the start, res = []
             First we look for 9, which will give an index of 1, hence we insert:
