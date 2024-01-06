@@ -82,6 +82,18 @@
         "TitleSlug": "best-time-to-buy-and-sell-stock-iii",
         "URI": "./array/1D/123.buyAndSellStock3.cpp"
     },
+    "1235": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Binary Search",
+            "Dynamic Programming",
+            "Sorting"
+        ],
+        "Title": "Maximum Profit in Job Scheduling",
+        "TitleSlug": "maximum-profit-in-job-scheduling",
+        "URI": "./array/2D/1235.maxProfitJobScheduling.cpp"
+    },
     "1277": {
         "Difficulty": "Medium",
         "Tags": [
@@ -446,5 +458,5 @@
             "URI": "./strings/NLC.1.displayLCS.cpp"
         }
     ],
-    "built on": "2024-01-05 13:32:11.526756"
+    "built on": "2024-01-06 15:38:44.891069"
 }
