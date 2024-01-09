@@ -200,13 +200,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         "URI": "./<category>/<filename>.cpp"
     }
  *
- * @returns {Promise<Questions>}
+ * @returns {Promise<questions>}
  */
 
 async function loadQuestions() {
     let response = await fetch("/URIs.json");
     if (!response.ok) {
-        pathPrefix = "/DP/";
+        pathPrefix = "/" + window.location.href.split("/")[3] + "/";;
         response = await fetch(pathPrefix + "URIs.json");
         if (!response.ok) throw new Error("Network response was not ok");
     }
