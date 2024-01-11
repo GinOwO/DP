@@ -6,7 +6,7 @@ using namespace std;
     Leetcode 115 - Distinct Subsequences
         Given two strings s(n) and t(m), return the number of distinct subsequences of s which equals t.
         Example: s = "babgbag", t = "bag", ans = 5
-        
+
         We'll just recurse over the strings and use a pick/not pick logic.
         We'll always consider the not pick case, and if the characters match, we'll consider the pick case as well.
         Not pick: (i, j) -> (i-1, j)
@@ -25,7 +25,7 @@ using namespace std;
 
         Answer is in dp[m]
 
-        Note: For leetcode, it can produce an overflow issue with dp table, even if we use long long. 
+        Note: For leetcode, it can produce an overflow issue with dp table, even if we use long long.
         Unsigned long long can work, but just use this condition instead:
             if(s[i]==t[j] && dp[i][j]<INT_MAX-dp[i-1][j-1])
 
@@ -34,42 +34,42 @@ using namespace std;
 
 class Solution {
 public:
-    int numDistinctDPSpace(const string& s, const string& t){
+    int numDistinctDPSpace(const string& s, const string& t) {
         int n = s.size(), m = t.size();
-        vector<int> dp(m+1, 0); dp[0]=1;
+        vector<int> dp(m + 1, 0); dp[0] = 1;
 
-        for(int i=1; i<=n; i++)
-            for(int j=m; j>=1; j--)
-                if(s[i-1]==t[j-1]) dp[j] += dp[j-1];
+        for ( int i = 1; i <= n; i++ )
+            for ( int j = m; j >= 1; j-- )
+                if ( s[i - 1] == t[j - 1] ) dp[j] += dp[j - 1];
 
         return dp[m];
     }
 
-    int numDistinctDP(const string& s, const string& t){
+    int numDistinctDP(const string& s, const string& t) {
         int n = s.size(), m = t.size();
-        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
-        for(auto&v:dp) v[0] = 1;
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        for ( auto& v : dp ) v[0] = 1;
 
-        for(int i=1; i<=n; i++){
-            for(int j=1; j<=m; j++){
-                dp[i][j] = dp[i-1][j];
-                if(s[i-1]==t[j-1]) dp[i][j] += dp[i-1][j-1];
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                dp[i][j] = dp[i - 1][j];
+                if ( s[i - 1] == t[j - 1] ) dp[i][j] += dp[i - 1][j - 1];
             }
         }
         return dp[n][m];
     }
 
-    int numDistinctRec(int i, int j, const string& s, const string& t, vector<vector<int>>& dp){
-        if(i<0||j<0) return j<0;
-        if(dp[i][j]!=-1) return dp[i][j];
+    int numDistinctRec(int i, int j, const string& s, const string& t, vector<vector<int>>& dp) {
+        if ( i < 0 || j < 0 ) return j < 0;
+        if ( dp[i][j] != -1 ) return dp[i][j];
 
-        int notTake = numDistinctRec(i-1, j, s, t, dp), take=0;
-        if(s[i]==t[j]) take = numDistinctRec(i-1, j-1, s, t, dp);
+        int notTake = numDistinctRec(i - 1, j, s, t, dp), take = 0;
+        if ( s[i] == t[j] ) take = numDistinctRec(i - 1, j - 1, s, t, dp);
 
-        return dp[i][j] = notTake+take;
+        return dp[i][j] = notTake + take;
     }
 
-    int numDistinct(const string& s, const string& t){
+    int numDistinct(const string& s, const string& t) {
         // int n = s.size(), m = t.size();
         // vector<vector<int>> dp(n+1, vector<int>(m+1, -1));
         // return numDistinctRec(s.size()-1, t.size()-1, s, t, dp);
@@ -77,7 +77,7 @@ public:
     }
 };
 
-int main(){
+int main() {
     Solution s;
     string s1 = "babgbag", s2 = "bag";
     cout << s.numDistinct(s1, s2) << endl;

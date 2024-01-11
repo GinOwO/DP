@@ -20,31 +20,31 @@ using namespace std;
 
 class Solution {
 public:
-    int numDecodingsDP(const string& s){
-        int dp[103]={0}, n=s.size(); dp[n]=1;
-        for(int i=n-1; i>=0; i--){
-            if(s[i]=='0') dp[i] = 0;
-            else dp[i]=dp[i+1];
+    int numDecodingsDP(const string& s) {
+        int dp[103] = { 0 }, n = s.size(); dp[n] = 1;
+        for ( int i = n - 1; i >= 0; i-- ) {
+            if ( s[i] == '0' ) dp[i] = 0;
+            else dp[i] = dp[i + 1];
 
-            int k1 = s[i]-'0', k2 = -1;
-            if(i+1<s.size()) k2 = k1*10 + (s[i+1]-'0');
-            if((k1>0) && (k2>0 && k2<=26)) dp[i] += dp[i+2];
+            int k1 = s[i] - '0', k2 = -1;
+            if ( i + 1 < s.size() ) k2 = k1 * 10 + ( s[i + 1] - '0' );
+            if ( ( k1 > 0 ) && ( k2 > 0 && k2 <= 26 ) ) dp[i] += dp[i + 2];
         }
         return dp[0];
     }
 
     int memo[101];
-    int numDecodingsRec(const string& s, int i=0){ // DFS
-        if(memo[i]!=-1) return memo[i];
-        if(s[i]=='0') return 0;
+    int numDecodingsRec(const string& s, int i = 0) { // DFS
+        if ( memo[i] != -1 ) return memo[i];
+        if ( s[i] == '0' ) return 0;
 
-        int k1 = s[i]-'0', k2 = -1, res=0;
-        if(i+1<s.size()) k2 = k1*10 + (s[i+1]-'0');
-        if(k1>0){
-            res += numDecodingsRec(s, i+1);
-            if(k2>0 && k2<=26) res += numDecodingsRec(s, i+2);
+        int k1 = s[i] - '0', k2 = -1, res = 0;
+        if ( i + 1 < s.size() ) k2 = k1 * 10 + ( s[i + 1] - '0' );
+        if ( k1 > 0 ) {
+            res += numDecodingsRec(s, i + 1);
+            if ( k2 > 0 && k2 <= 26 ) res += numDecodingsRec(s, i + 2);
         }
-        return memo[i]=res;
+        return memo[i] = res;
     }
 
     int numDecodings(const string& s) {
@@ -54,7 +54,7 @@ public:
     }
 };
 
-int main(){
+int main() {
     Solution s;
     string str = "226";
     cout << s.numDecodings(str) << endl;

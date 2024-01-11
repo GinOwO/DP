@@ -17,27 +17,27 @@ using namespace std;
 
 class Solution {
 public:
-    int maxProfitRec(int i, bool b, const vector<int>& prices, vector<vector<int>>& dp){
-        if(i>=prices.size()) return 0;
+    int maxProfitRec(int i, bool b, const vector<int>& prices, vector<vector<int>>& dp) {
+        if ( i >= prices.size() ) return 0;
 
-        if(dp[b][i]!=-1) return dp[b][i];
+        if ( dp[b][i] != -1 ) return dp[b][i];
 
         int profit = 0;
-        if(b) profit = max(-prices[i] + maxProfitRec(i+1, 0, prices, dp), maxProfitRec(i+1, 1, prices, dp));
-        else profit = max(prices[i] + maxProfitRec(i+2, 1, prices, dp), maxProfitRec(i+1, 0, prices, dp));
+        if ( b ) profit = max(-prices[i] + maxProfitRec(i + 1, 0, prices, dp), maxProfitRec(i + 1, 1, prices, dp));
+        else profit = max(prices[i] + maxProfitRec(i + 2, 1, prices, dp), maxProfitRec(i + 1, 0, prices, dp));
 
         return dp[b][i] = profit;
     }
 
     int maxProfit(vector<int>& prices) {
-        vector<vector<int>> dp(2, vector<int>(prices.size()+1, -1));
+        vector<vector<int>> dp(2, vector<int>(prices.size() + 1, -1));
         return maxProfitRec(0, 1, prices, dp);
     }
 };
 
-int main(){
+int main() {
     Solution sol;
-    vector<int> prices = {1,2,3,0,2};
-    cout<<sol.maxProfit(prices)<<endl;
+    vector<int> prices = { 1,2,3,0,2 };
+    cout << sol.maxProfit(prices) << endl;
     return 0;
 }

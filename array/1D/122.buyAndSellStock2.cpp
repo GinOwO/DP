@@ -23,7 +23,7 @@ using namespace std;
         For i=n-1->0
             DP[1][i] = max(prices[i] + DP[0][i+1], DP[1][i+1])
             DP[0][i] = max(-prices[i] + DP[1][i+1], DP[0][i+1])
-        
+
         Time: O(n), Space: O(n)
 
         Space Optimized:
@@ -32,7 +32,7 @@ using namespace std;
                 a = max(prices[i] + y, x)
                 b = max(-prices[i] + x, y)
                 x=a, y=b
-            
+
             Then the answer is y
 
             Time: O(n), Space: O(1)
@@ -40,35 +40,35 @@ using namespace std;
 
 class Solution {
 public:
-    int maxProfitDPSpace(const vector<int>& prices, const int n){
-        int a, b, x=0, y=0;
+    int maxProfitDPSpace(const vector<int>& prices, const int n) {
+        int a, b, x = 0, y = 0;
 
-        for(int i=n-1; i>=0; i--){
+        for ( int i = n - 1; i >= 0; i-- ) {
             a = max(prices[i] + y, x);
             b = max(-prices[i] + x, y);
-            x=a, y=b;
+            x = a, y = b;
         }
         return y;
     }
 
-    int maxProfitDP(const vector<int>& prices, const int n){
-        vector<vector<int>> dp(2, vector<int>(n+1, 0));
+    int maxProfitDP(const vector<int>& prices, const int n) {
+        vector<vector<int>> dp(2, vector<int>(n + 1, 0));
 
-        for(int i=n-1; i>=0; i--){
-            dp[0][i] = max(prices[i] + dp[1][i+1], dp[0][i+1]);
-            dp[1][i] = max(-prices[i] + dp[0][i+1], dp[1][i+1]);
+        for ( int i = n - 1; i >= 0; i-- ) {
+            dp[0][i] = max(prices[i] + dp[1][i + 1], dp[0][i + 1]);
+            dp[1][i] = max(-prices[i] + dp[0][i + 1], dp[1][i + 1]);
         }
         return dp[1][0];
     }
 
-    int maxProfitRec(int i, bool b, const vector<int>& prices, vector<vector<int>>& dp){
-        if(i==prices.size()) return 0;
+    int maxProfitRec(int i, bool b, const vector<int>& prices, vector<vector<int>>& dp) {
+        if ( i == prices.size() ) return 0;
 
-        if(dp[b][i]!=-1) return dp[b][i];
+        if ( dp[b][i] != -1 ) return dp[b][i];
 
         int profit = 0;
-        if(b) profit = max(-prices[i] + maxProfitRec(i+1, 0, prices, dp), maxProfitRec(i+1, 1, prices, dp));
-        else profit = max(prices[i] + maxProfitRec(i+1, 1, prices, dp), maxProfitRec(i+1, 0, prices, dp));
+        if ( b ) profit = max(-prices[i] + maxProfitRec(i + 1, 0, prices, dp), maxProfitRec(i + 1, 1, prices, dp));
+        else profit = max(prices[i] + maxProfitRec(i + 1, 1, prices, dp), maxProfitRec(i + 1, 0, prices, dp));
 
         return dp[b][i] = profit;
     }
@@ -80,9 +80,9 @@ public:
     }
 };
 
-int main(){
+int main() {
     Solution s;
-    vector<int> prices = {7,1,5,3,6,4};
+    vector<int> prices = { 7,1,5,3,6,4 };
     cout << s.maxProfit(prices) << endl;
     return 0;
 }

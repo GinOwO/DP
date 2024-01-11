@@ -20,58 +20,58 @@ using namespace std;
         For i=n-1 to 0
             For x=0 to W
                 dp[x] = max(dp[x], (x>=wt[i]?val[i]+dp[x-wt[i]]:0))
-        
+
         Answer = dp[W]
 
         Time Complexity: O(n*W), Space Complexity: O(W)
 
 */
 
-class Solution{
+class Solution {
 public:
-    int knapsackDPSpace(int W, int* wt, int* val, int n){
-        vector<int> dp(W+1, 0);
-        for(int i=n-1; i>=0; i--)
-            for(int x=0; x<=W; x++)
-                if(x>=wt[i]) dp[x] = max(dp[x], val[i] + dp[x-wt[i]]);
+    int knapsackDPSpace(int W, int* wt, int* val, int n) {
+        vector<int> dp(W + 1, 0);
+        for ( int i = n - 1; i >= 0; i-- )
+            for ( int x = 0; x <= W; x++ )
+                if ( x >= wt[i] ) dp[x] = max(dp[x], val[i] + dp[x - wt[i]]);
         return dp[W];
     }
 
-    int knapsackDP(int W, int* wt, int* val, int n){
-        vector<vector<int>> dp(n+1, vector<int>(W+1, 0));
-        for(int i=n-1; i>=0; i--){
-            for(int x=1; x<=W; x++){
-                int notTake = dp[i+1][x];
+    int knapsackDP(int W, int* wt, int* val, int n) {
+        vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int x = 1; x <= W; x++ ) {
+                int notTake = dp[i + 1][x];
                 int take = 0;
-                if(x>=wt[i]) take = val[i] + dp[i][x-wt[i]];
-                
+                if ( x >= wt[i] ) take = val[i] + dp[i][x - wt[i]];
+
                 dp[i][x] = max(notTake, take);
             }
         }
         return dp[0][W];
     }
 
-    int knapsackRec(int i, int W, int val[], int wt[], int n, vector<vector<int>>& dp){
-        if(i==n) return 0;
-        if(dp[i][W]!=-1) return dp[i][W];
-        
-        int notTake = knapsackRec(i+1, W, val, wt, n, dp), take = 0;
-        if(W>=wt[i]) take = val[i] + knapsackRec(i, W-wt[i], val, wt, n, dp);
-        
+    int knapsackRec(int i, int W, int val[], int wt[], int n, vector<vector<int>>& dp) {
+        if ( i == n ) return 0;
+        if ( dp[i][W] != -1 ) return dp[i][W];
+
+        int notTake = knapsackRec(i + 1, W, val, wt, n, dp), take = 0;
+        if ( W >= wt[i] ) take = val[i] + knapsackRec(i, W - wt[i], val, wt, n, dp);
+
         return dp[i][W] = max(take, notTake);
     }
 
-    int knapSack(int n, int W, int val[], int wt[]){
+    int knapSack(int n, int W, int val[], int wt[]) {
         // vector<vector<int>> dp(n+1, vector<int>(W+1, -1));
         // return knapsackRec(0, W, val, wt, n, dp);
         return knapsackDPSpace(W, wt, val, n);
     }
 };
 
-int main(){
+int main() {
     Solution s;
-    int val[] = {60, 100, 120};
-    int wt[] = {10, 20, 30};
+    int val[] = { 60, 100, 120 };
+    int wt[] = { 10, 20, 30 };
     cout << s.knapSack(3, 50, val, wt) << endl;
     return 0;
 }

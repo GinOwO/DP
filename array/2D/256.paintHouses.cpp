@@ -14,31 +14,31 @@ using namespace std;
 // Copy nDP to DP. In the end, return min(DP)
 // Time: O(n), Space: O(1)
 
-int minCost(const vector<vector<int>>& arr){
+int minCost(const vector<vector<int>>& arr) {
     int n = arr.size();
-    vector<int> dp(5, 0); dp[0]=dp[4]=INT_MAX;
-    for(auto&v:arr){
+    vector<int> dp(5, 0); dp[0] = dp[4] = INT_MAX;
+    for ( auto& v : arr ) {
         vector<int> nDP(5, INT_MAX);
-        for(int i=1; i<=3; i++)
-            nDP[i] = v[i-1]+min(dp[i-1], min(dp[i], dp[i+1]));
+        for ( int i = 1; i <= 3; i++ )
+            nDP[i] = v[i - 1] + min(dp[i - 1], min(dp[i], dp[i + 1]));
         dp = nDP;
     }
     int mn = INT_MAX;
-    for(auto&c:dp) mn = min(mn, c);
+    for ( auto& c : dp ) mn = min(mn, c);
     return mn;
 }
 
-int main(){
+int main() {
     // Paint houses - Leetcode 256
     map<vector<vector<int>>, int> arr = {
         {{{17,2,17},{16,16,5},{14,3,19}}, 10},
-        {{{7,6,2}}, 2}, 
+        {{{7,6,2}}, 2},
         {{{7,6,2},{1,2,3}}, 4}
     };
-    for(auto&[v, ans]:arr){
+    for ( auto& [v, ans] : arr ) {
         int res = minCost(v);
         cout << "Min cost to paint houses: " << res << endl;
-        assert(res==ans);
+        assert(res == ans);
     }
     return 0;
 }

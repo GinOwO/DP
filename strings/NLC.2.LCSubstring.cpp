@@ -14,17 +14,17 @@ using namespace std;
 
 */
 
-class Solution{
+class Solution {
 public:
-    int lcSubstringDPSpace(const string& s1, const string& s2){
-        int n=s1.size(), m=s2.size(), ans = 0;
-        vector<int> ndp(m+1, 0), dp(m+1, 0);
+    int lcSubstringDPSpace(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size(), ans = 0;
+        vector<int> ndp(m + 1, 0), dp(m + 1, 0);
 
-        for(int i=1; i<=n; i++){
-            for(int j=1; j<=m; j++){
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
                 ndp[j] = 0;
-                if(s1[i-1]==s2[j-1]){
-                    ndp[j] = 1 + dp[j-1];
+                if ( s1[i - 1] == s2[j - 1] ) {
+                    ndp[j] = 1 + dp[j - 1];
                     ans = max(ans, ndp[j]);
                 }
             }
@@ -33,15 +33,15 @@ public:
         return ans;
     }
 
-    int lcSubstringDP(const string& s1, const string& s2){
-        int n=s1.size(), m=s2.size(), ans = 0;
-        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+    int lcSubstringDP(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size(), ans = 0;
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
 
-        for(int i=1; i<=n; i++){
-            for(int j=1; j<=m; j++){
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
                 dp[i][j] = 0;
-                if(s1[i-1]==s2[j-1]){
-                    dp[i][j] = 1 + dp[i-1][j-1];
+                if ( s1[i - 1] == s2[j - 1] ) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
                     ans = max(ans, dp[i][j]);
                 }
             }
@@ -49,13 +49,13 @@ public:
         return ans;
     }
 
-    int LCSubstring(const string& s1, const string& s2){
+    int LCSubstring(const string& s1, const string& s2) {
         // return lcSubstringDP(s1, s2);
         return lcSubstringDPSpace(s1, s2);
     }
 };
 
-int main(){
+int main() {
     Solution s;
     string s1 = "calbdoe", s2 = "aclbde";
     cout << s.LCSubstring(s1, s2) << endl;

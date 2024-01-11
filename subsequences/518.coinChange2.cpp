@@ -21,7 +21,7 @@ using namespace std;
         For i=0 to n-1
             For x=coins[i] to amount
                 dp[x] += dp[x-coins[i]]
-        
+
         Answer = dp[amount]
 
         Time Complexity: O(n*amount), Space Complexity: O(amount)
@@ -29,27 +29,27 @@ using namespace std;
 
 class Solution {
 public:
-    int changeDPSpace2(const int amount, const vector<int>& coins){
+    int changeDPSpace2(const int amount, const vector<int>& coins) {
         int n = coins.size();
-        vector<int> dp(amount+1, 0); dp[0] = 1;
+        vector<int> dp(amount + 1, 0); dp[0] = 1;
 
-        for(int i=0; i<n; i++)
-            for(int x=coins[i]; x<=amount; x++)
-                dp[x] += dp[x-coins[i]];
+        for ( int i = 0; i < n; i++ )
+            for ( int x = coins[i]; x <= amount; x++ )
+                dp[x] += dp[x - coins[i]];
 
         return dp[amount];
     }
 
-    int changeDPSpace(const int amount, const vector<int>& coins){
+    int changeDPSpace(const int amount, const vector<int>& coins) {
         int n = coins.size();
-        vector<int> dp(amount+1, 0), ndp(amount+1, 0);
+        vector<int> dp(amount + 1, 0), ndp(amount + 1, 0);
 
-        for(int i=0; i<=amount; i++) dp[i] = i%coins[0]==0;
+        for ( int i = 0; i <= amount; i++ ) dp[i] = i % coins[0] == 0;
 
-        for(int i=1; i<n; i++){
-            for(int x=0; x<=amount; x++){
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 0; x <= amount; x++ ) {
                 int notTake = dp[x], take = 0;
-                if(x>=coins[i]) take = ndp[x-coins[i]];
+                if ( x >= coins[i] ) take = ndp[x - coins[i]];
                 ndp[x] = take + notTake;
             }
             dp = ndp;
@@ -57,28 +57,28 @@ public:
         return dp[amount];
     }
 
-    int changeDP(const int amount, const vector<int>& coins){
+    int changeDP(const int amount, const vector<int>& coins) {
         int n = coins.size();
-        vector<vector<int>> dp(n, vector<int>(amount+1, 0));
+        vector<vector<int>> dp(n, vector<int>(amount + 1, 0));
 
-        for(int i=0; i<=amount; i++) dp[0][i] = i%coins[0]==0;
+        for ( int i = 0; i <= amount; i++ ) dp[0][i] = i % coins[0] == 0;
 
-        for(int i=1; i<n; i++){
-            for(int x=0; x<=amount; x++){
-                int notTake = dp[i-1][x], take = 0;
-                if(x>=coins[i]) take = dp[i][x-coins[i]];
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 0; x <= amount; x++ ) {
+                int notTake = dp[i - 1][x], take = 0;
+                if ( x >= coins[i] ) take = dp[i][x - coins[i]];
                 dp[i][x] = take + notTake;
             }
         }
-        return dp[n-1][amount];
+        return dp[n - 1][amount];
     }
 
-    int changeRec(int i, int x, const vector<int>& coins, vector<vector<int>>& dp){
-        if(i==0) return x%coins[i]==0;
-        if(dp[i][x]!=-1) return dp[i][x];
+    int changeRec(int i, int x, const vector<int>& coins, vector<vector<int>>& dp) {
+        if ( i == 0 ) return x % coins[i] == 0;
+        if ( dp[i][x] != -1 ) return dp[i][x];
 
-        int notTake = changeRec(i-1, x, coins, dp), take = 0;
-        if(x>=coins[i]) take = changeRec(i, x-coins[i], coins, dp);
+        int notTake = changeRec(i - 1, x, coins, dp), take = 0;
+        if ( x >= coins[i] ) take = changeRec(i, x - coins[i], coins, dp);
         return dp[i][x] = take + notTake;
     }
 
@@ -89,9 +89,9 @@ public:
     }
 };
 
-int main(){
+int main() {
     Solution s;
-    vector<int> coins = {1,2,5};
+    vector<int> coins = { 1,2,5 };
     cout << s.change(5, coins) << endl;
     return 0;
 }

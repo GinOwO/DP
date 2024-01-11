@@ -14,19 +14,19 @@ using namespace std;
 
 int minFallingPathSum(vector<vector<int>>& matrix) {
     int n = matrix.size();
-    vector<int> dp(n+2, 0); dp[0]=dp[n+1]=1e9;
+    vector<int> dp(n + 2, 0); dp[0] = dp[n + 1] = 1e9;
     vector<int> ndp(dp);
-    for(int i=1; i<=n; i++){
-        for(int j=1; j<=n; j++){
-            ndp[j] = matrix[i-1][j-1]+min(dp[j-1], min(dp[j], dp[j+1]));
+    for ( int i = 1; i <= n; i++ ) {
+        for ( int j = 1; j <= n; j++ ) {
+            ndp[j] = matrix[i - 1][j - 1] + min(dp[j - 1], min(dp[j], dp[j + 1]));
         }
-        dp=ndp;
+        dp = ndp;
     }
-    return *min_element(dp.begin()+1, dp.end()-1);
+    return *min_element(dp.begin() + 1, dp.end() - 1);
 }
 
-int main(){
-    vector<vector<int>> matrix = {{2,1,3},{6,5,4},{7,8,9}};
+int main() {
+    vector<vector<int>> matrix = { {2,1,3},{6,5,4},{7,8,9} };
     cout << minFallingPathSum(matrix) << endl;
     return 0;
 }

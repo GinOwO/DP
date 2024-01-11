@@ -4,7 +4,7 @@ using namespace std;
 
 /*
     Leetcode 1092 - Shortest Common Supersequence
-        Given two strings s1 and s2, return the shortest string that has both s1 and s2 as subsequences.  
+        Given two strings s1 and s2, return the shortest string that has both s1 and s2 as subsequences.
         If multiple answers exist, you may return any of them.
 
         We'll do this similar to how we print the LCS. We populate the DP table.
@@ -16,42 +16,42 @@ using namespace std;
 
 class Solution {
 public:
-    int lcsDP(const string& s1, const string& s2, vector<vector<int>>& dp){
-        int n=s1.size(), m=s2.size();
+    int lcsDP(const string& s1, const string& s2, vector<vector<int>>& dp) {
+        int n = s1.size(), m = s2.size();
 
-        for(int i=1; i<=n; i++){
-            for(int j=1; j<=m; j++){
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
                 int ans = 0;
-                if(s1[i-1]==s2[j-1]) ans = 1 + dp[i-1][j-1];
-                else ans = max(dp[i-1][j], dp[i][j-1]);
+                if ( s1[i - 1] == s2[j - 1] ) ans = 1 + dp[i - 1][j - 1];
+                else ans = max(dp[i - 1][j], dp[i][j - 1]);
                 dp[i][j] = ans;
             }
         }
         return dp[n][m];
     }
 
-    string shortestCommonSupersequence(const string& s1, const string& s2){
-        int n=s1.size(), m=s2.size(); string lcs; 
-        vector<vector<int>> dp(n+1, vector<int>(m+1, 0));
+    string shortestCommonSupersequence(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size(); string lcs;
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
 
-        lcs.resize(n+m-lcsDP(s1, s2, dp));
-        int i=n, j=m, k=lcs.size()-1;
+        lcs.resize(n + m - lcsDP(s1, s2, dp));
+        int i = n, j = m, k = lcs.size() - 1;
 
-        while(i>0 && j>0){
-            if(s1[i-1]==s2[j-1]){
-                lcs[k--] = s1[i-1];
+        while ( i > 0 && j > 0 ) {
+            if ( s1[i - 1] == s2[j - 1] ) {
+                lcs[k--] = s1[i - 1];
                 i--; j--;
             }
-            else if(dp[i-1][j]>dp[i][j-1]) lcs[k--] = s1[--i];
+            else if ( dp[i - 1][j] > dp[i][j - 1] ) lcs[k--] = s1[--i];
             else lcs[k--] = s2[--j];
         }
-        while(i>0) lcs[k--] = s1[--i];
-        while(j>0) lcs[k--] = s2[--j];
+        while ( i > 0 ) lcs[k--] = s1[--i];
+        while ( j > 0 ) lcs[k--] = s2[--j];
         return lcs;
     }
 };
 
-int main(){
+int main() {
     Solution s;
     string s1 = "abac", s2 = "cab";
     cout << s.shortestCommonSupersequence(s1, s2) << endl;

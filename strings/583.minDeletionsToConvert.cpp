@@ -17,14 +17,14 @@ using namespace std;
 
 class Solution {
 public:
-    int lcsDPSpace(const string& s1, const string& s2){
-        int n=s1.size(), m=s2.size();
-        vector<int> dp(m+1, 0), ndp(m+1, 0);
+    int lcsDPSpace(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size();
+        vector<int> dp(m + 1, 0), ndp(m + 1, 0);
 
-        for(int i=1; i<=n; i++){
-            for(int j=1; j<=m; j++){
-                if(s1[i-1]==s2[j-1]) ndp[j] = 1 + dp[j-1];
-                else ndp[j] = max(dp[j], ndp[j-1]);
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                if ( s1[i - 1] == s2[j - 1] ) ndp[j] = 1 + dp[j - 1];
+                else ndp[j] = max(dp[j], ndp[j - 1]);
             }
             dp = ndp;
         }
@@ -32,11 +32,11 @@ public:
     }
 
     int minDistance(const string& w1, const string& w2) {
-        return w1.size()+w2.size() - 2*lcsDPSpace(w1, w2);
+        return w1.size() + w2.size() - 2 * lcsDPSpace(w1, w2);
     }
 };
 
-int main(){
+int main() {
     Solution s;
     string s1 = "sea", s2 = "eat";
     cout << s.minDistance(s1, s2) << endl;
