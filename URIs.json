@@ -105,6 +105,17 @@
         "TitleSlug": "count-square-submatrices-with-all-ones",
         "URI": "./array/2D/1277.countSubmatricesWithOnes.cpp"
     },
+    "1306": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Array",
+            "Depth-First Search",
+            "Breadth-First Search"
+        ],
+        "Title": "Jump Game III",
+        "TitleSlug": "jump-game-iii",
+        "URI": "./array/1D/1306.jumpGame3.cpp"
+    },
     "1312": {
         "Difficulty": "Hard",
         "Tags": [
@@ -198,6 +209,17 @@
         "TitleSlug": "best-time-to-buy-and-sell-stock-with-cooldown",
         "URI": "./array/1D/309.buyAndSellStockWithCooldown.cpp"
     },
+    "32": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "String",
+            "Dynamic Programming",
+            "Stack"
+        ],
+        "Title": "Longest Valid Parentheses",
+        "TitleSlug": "longest-valid-parentheses",
+        "URI": "./strings/32.longestValidParanthesis.cpp"
+    },
     "332": {
         "Difficulty": "Hard",
         "Tags": [
@@ -283,6 +305,15 @@
         "Title": "Coin Change II",
         "TitleSlug": "coin-change-ii",
         "URI": "./subsequences/518.coinChange2.cpp"
+    },
+    "576": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Dynamic Programming"
+        ],
+        "Title": "Out of Boundary Paths",
+        "TitleSlug": "out-of-boundary-paths",
+        "URI": "./grid/576.outOfBoundaryPaths.cpp"
     },
     "583": {
         "Difficulty": "Medium",
@@ -422,12 +453,6 @@
         {
             "Difficulty": "NA",
             "Tags": [],
-            "Title": "knapsack01",
-            "URI": "./subsequences/NLC.2.knapsack01.cpp"
-        },
-        {
-            "Difficulty": "NA",
-            "Tags": [],
             "Title": "unboundedKnapsack",
             "URI": "./subsequences/NLC.3.unboundedKnapsack.cpp"
         },
@@ -436,12 +461,6 @@
             "Tags": [],
             "Title": "printingLIS",
             "URI": "./subsequences/NLC.5.printingLIS.cpp"
-        },
-        {
-            "Difficulty": "NA",
-            "Tags": [],
-            "Title": "subsetSum",
-            "URI": "./subsequences/NLC.1.subsetSum.cpp"
         },
         {
             "Difficulty": "NA",
@@ -458,6 +477,18 @@
         {
             "Difficulty": "NA",
             "Tags": [],
+            "Title": "subsetSum",
+            "URI": "./subsequences/NLC.1.subsetSum.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "knapsack01",
+            "URI": "./subsequences/NLC.2.knapsack01.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
             "Title": "LCSubstring",
             "URI": "./strings/NLC.2.LCSubstring.cpp"
         },
@@ -468,5 +499,5 @@
             "URI": "./strings/NLC.1.displayLCS.cpp"
         }
     ],
-    "built on": "2024-01-11 19:06:18.637533"
+    "built on": "2024-01-26 07:15:18.976275"
 }
