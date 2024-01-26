@@ -5,5 +5,4 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-g++ -g $1 -o $2
-
+g++ -g "$1" -o "$2" -std=c++20 -fsanitize=address -fsanitize=undefined
