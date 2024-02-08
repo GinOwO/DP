@@ -188,6 +188,17 @@
         "TitleSlug": "paint-house",
         "URI": "./array/2D/256.paintHouses.cpp"
     },
+    "279": {
+        "Difficulty": "Medium",
+        "Tags": [
+            "Math",
+            "Dynamic Programming",
+            "Breadth-First Search"
+        ],
+        "Title": "Perfect Squares",
+        "TitleSlug": "perfect-squares",
+        "URI": "./combinatorial/279.perfectSquares.cpp"
+    },
     "300": {
         "Difficulty": "Medium",
         "Tags": [
@@ -453,6 +464,18 @@
         {
             "Difficulty": "NA",
             "Tags": [],
+            "Title": "logCutting",
+            "URI": "./subsequences/NLC.4.logCutting.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "knapsack01",
+            "URI": "./subsequences/NLC.2.knapsack01.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
             "Title": "unboundedKnapsack",
             "URI": "./subsequences/NLC.3.unboundedKnapsack.cpp"
         },
@@ -465,26 +488,14 @@
         {
             "Difficulty": "NA",
             "Tags": [],
-            "Title": "longestBitonicSubsequence",
-            "URI": "./subsequences/NLC.6.longestBitonicSubsequence.cpp"
-        },
-        {
-            "Difficulty": "NA",
-            "Tags": [],
-            "Title": "logCutting",
-            "URI": "./subsequences/NLC.4.logCutting.cpp"
-        },
-        {
-            "Difficulty": "NA",
-            "Tags": [],
             "Title": "subsetSum",
             "URI": "./subsequences/NLC.1.subsetSum.cpp"
         },
         {
             "Difficulty": "NA",
             "Tags": [],
-            "Title": "knapsack01",
-            "URI": "./subsequences/NLC.2.knapsack01.cpp"
+            "Title": "longestBitonicSubsequence",
+            "URI": "./subsequences/NLC.6.longestBitonicSubsequence.cpp"
         },
         {
             "Difficulty": "NA",
@@ -499,5 +510,5 @@
             "URI": "./strings/NLC.1.displayLCS.cpp"
         }
     ],
-    "built on": "2024-01-26 07:15:18.976275"
+    "built on": "2024-02-08 19:07:49.028248"
 }
