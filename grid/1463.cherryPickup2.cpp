@@ -30,12 +30,11 @@ using namespace std;
 
         Return dp[0][m-1] as ans is stored here and not in dp[0][0]
 
-        Time: O(n^3), Space: O(n^2)
 */
 
 class Solution {
 public:
-    int cherryPickup2ManMemo(const vector<vector<int>>& grid, const int m, int r, int c1, int c2, int*** memo2P) {
+    int cherryPickup2ManMemo(const vector<vector<int>>& grid, const int m, int r, int c1, int c2, int memo2P[71][71][71]) {
         if ( c1 < 0 || c2 < 0 || c1 >= m || c2 >= m ) return -1e8;
         if ( r == grid.size() - 1 ) {
             if ( c1 == c2 ) return grid[r][c1];
@@ -59,9 +58,9 @@ public:
     int cherryPickup(vector<vector<int>>& grid) {
         const int n = grid.size(), m = grid[0].size();
 
-        // memset(memo2P, -1, 71*71*71*sizeof(int));
         // int memo2P[71][71][71];
-        // return cherryPickup2ManMemo(grid, m, 0, 0, m-1);
+        // memset(memo2P, -1, 71*71*71*sizeof(int));
+        // return cherryPickup2ManMemo(grid, m, 0, 0, m-1, memo2P);
 
         vector<vector<int>>  dp(m, vector<int>(m, 0));
         vector<vector<int>> ndp(m, vector<int>(m, 0));
