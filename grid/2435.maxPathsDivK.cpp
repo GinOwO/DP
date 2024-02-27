@@ -2,17 +2,17 @@
 
 using namespace std;
 
-
 class Solution {
     const int MOD = 1e9 + 7;
 public:
     int numberOfPathsDP(const int k, const vector<vector<int>>& grid) {
         int m = grid.size(), n = grid[0].size();
-        vector<vector<vector<int>>> dp(m + 1, vector<vector<int>>(n + 1, vector<int>(k, 0)));
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(k, 0)));
         dp[0][0][grid[0][0] % k] = 1;
 
         for ( int i = 0; i < m; i++ ) {
             for ( int j = 0; j < n; j++ ) {
+                if ( i == 0 && j == 0 ) continue;
                 for ( int sum = 0; sum < k; sum++ ) {
                     int rem = ( sum + grid[i][j] ) % k;
                     if ( i ) dp[i][j][rem] += dp[i - 1][j][sum];
