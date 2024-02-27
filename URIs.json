@@ -189,6 +189,17 @@
         "TitleSlug": "house-robber-ii",
         "URI": "./array/1D/213.houseRobber2.cpp"
     },
+    "2435": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Paths in Matrix Whose Sum Is Divisible by K",
+        "TitleSlug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+        "URI": "./grid/2435.maxPathsDivK.cpp"
+    },
     "256": {
         "Difficulty": "Medium",
         "Tags": [
@@ -521,5 +532,5 @@
             "URI": "./partition/NLC.1.matrixChainMultiplication.cpp"
         }
     ],
-    "built on": "2024-02-27 14:34:41.069864"
+    "built on": "2024-02-27 17:10:40.989365"
 }
