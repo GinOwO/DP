@@ -148,6 +148,17 @@
         "TitleSlug": "minimum-cost-to-cut-a-stick",
         "URI": "./partition/1547.minCostToCut.cpp"
     },
+    "174": {
+        "Difficulty": "Hard",
+        "Tags": [
+            "Array",
+            "Dynamic Programming",
+            "Matrix"
+        ],
+        "Title": "Dungeon Game",
+        "TitleSlug": "dungeon-game",
+        "URI": "./grid/174.dungeonGame.cpp"
+    },
     "188": {
         "Difficulty": "Hard",
         "Tags": [
@@ -458,8 +469,14 @@
         {
             "Difficulty": "NA",
             "Tags": [],
-            "Title": "matrixChainMultiplication",
-            "URI": "./partition/NLC.1.matrixChainMultiplication.cpp"
+            "Title": "knapsack01",
+            "URI": "./subsequences/NLC.2.knapsack01.cpp"
+        },
+        {
+            "Difficulty": "NA",
+            "Tags": [],
+            "Title": "longestBitonicSubsequence",
+            "URI": "./subsequences/NLC.6.longestBitonicSubsequence.cpp"
         },
         {
             "Difficulty": "NA",
@@ -470,8 +487,8 @@
         {
             "Difficulty": "NA",
             "Tags": [],
-            "Title": "knapsack01",
-            "URI": "./subsequences/NLC.2.knapsack01.cpp"
+            "Title": "subsetSum",
+            "URI": "./subsequences/NLC.1.subsetSum.cpp"
         },
         {
             "Difficulty": "NA",
@@ -488,14 +505,8 @@
         {
             "Difficulty": "NA",
             "Tags": [],
-            "Title": "subsetSum",
-            "URI": "./subsequences/NLC.1.subsetSum.cpp"
-        },
-        {
-            "Difficulty": "NA",
-            "Tags": [],
-            "Title": "longestBitonicSubsequence",
-            "URI": "./subsequences/NLC.6.longestBitonicSubsequence.cpp"
+            "Title": "displayLCS",
+            "URI": "./strings/NLC.1.displayLCS.cpp"
         },
         {
             "Difficulty": "NA",
@@ -506,9 +517,9 @@
         {
             "Difficulty": "NA",
             "Tags": [],
-            "Title": "displayLCS",
-            "URI": "./strings/NLC.1.displayLCS.cpp"
+            "Title": "matrixChainMultiplication",
+            "URI": "./partition/NLC.1.matrixChainMultiplication.cpp"
         }
     ],
-    "built on": "2024-02-11 16:29:02.262506"
+    "built on": "2024-02-27 14:34:41.069864"
 }
