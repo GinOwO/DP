@@ -111,5 +111,6 @@
     "C_Cpp.clang_format_style": "Visual Studio",
     "C_Cpp.vcFormat.space.beforeInitializerListOpenBrace": true,
     "C_Cpp.vcFormat.space.withinControlFlowStatementParentheses": true,
-    "C_Cpp.vcFormat.space.withinExpressionParentheses": true
+    "C_Cpp.vcFormat.space.withinExpressionParentheses": true,
+    "C_Cpp.default.compilerPath": "/usr/lib64/ccache/g++"
 }
