@@ -1,0 +1,3649 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 300 - Longest Increasing Subsequence
+        Given an integer array nums, return the length of the longest strictly increasing subsequence.
+
+        The normal recursive solution is:
+
+        F(i, prev, arr[], n) = 
+            If i==n: return 0
+            len = F(i+1, p, arr, n)     // Skip case
+            If p==-INF OR arr[i]>arr[p]:  // Match case or first element
+                len = max(len, 1+F(i+1, i, arr, n)) 
+            return len
+        
+        This can be easily converted into a DP solution using a 2D array:
+            DP[n+1][n+1] = {-INF}
+            For i=n->0
+                For p=0->n
+                    len = DP[i+1][p]
+                    If p==0 OR arr[i]>arr[p]:
+                        len = max(len, 1+DP[i+1][i])
+                    DP[i][p] = len
+            Answer is DP[0][0]
+
+        Time: O(n^2), Space: O(n^2)
+
+        This can be reduced into two 1D arrays, which can again be reduced to a single 1D array, which reduces space complexity to O(n):
+            DP[n] = {1} // Base case as in a completely decreasing array, the answer is 1, i.e a single element
+            For i=1->n-1
+                For j=0->i-1
+                    if arr[i] > arr[j]: DP[i] = max(DP[i], DP[j]+1)
+
+            Answer is max(DP[i])
+        
+        Time: O(n^2), Space: O(n)
+
+
+    Alternative DP solution which is O(nlogn) time and O(n) space.
+
+        Essentially the idea behind this is that we keep a vector say res. Let the input be arr = {9,2,5,10,3,7,11}.
+        The answer in this case is 4, i.e {2,5,7,11} or {2,5,10,11} or {2,5,7,11} or {2,3,7,11}.
+
+        We iterate over arr, then we find the lowerbound of the current element(say c) in res, 
+            i.e the position where c can be inserted without disturbing the non-decreasing sequence.
+        
+        If the lowerbound is equal to the size of res, i.e it is bigger than all elements in res, then we just append c to res.
+        Else we replace the element at the lowerbound with c.
+
+        The answer will be the size of res.
+
+        
+        Intution: 
+        (P.S: By look I mean finding the lowerbound as defined above. It by definition will give an index equal 
+        to size of array if the element is bigger than all elements in the array)
+
+        Think of res as a an array of stacks, where the top of the stack is the smallest element and
+        the top element of the ith stack is smaller than the top element of the (i+1)th stack:
+
+            At the start, res = []
+            First we look for 9, which will give an index of 1, hence we insert:
+            
+            res = |9|
+
+            Next we look for 2, which will give an index of 0, hence we can put it above 9:
+
+                  |2|
+            res = |9|
+
+            Next we look for 5, which will give an index of 1 as 5 is bigger than 2, hence we can put it in a new stack:
+
+                  | 2 |
+            res = | 9 | 5 |
+
+            Next we look for 10, which will give an index of 2 as 10 is bigger than 2 and 5, hence we can put it in a new stack:
+
+                  | 2 |
+            res = | 9 | 5 | 10 |
+            
+            At every step, imagine if the top of the ith stack is connected to the top of the (i-1)th stack, like 10 <- 5 <- 2.
+
+            Next we look for 3, which will give an index of 1 as 3 is bigger than 2, but less than 5, hence we can put it above 5:
+
+                  | 2 | 3 |
+            res = | 9 | 5 | 10 |
+
+            Now the link becomes 10 <- 3 <- 2
+
+            Next we look for 7, which will give an index of 2 as 7 is bigger than 2 and 3 but less than 10, hence put it above 10:
+
+                  | 2 | 3 | 7  |
+            res = | 9 | 5 | 10 |
+
+            Finally, we look for 11, which will give an index of 3 as 11 is bigger than 2, 3, 7 and 10, hence put it in a new stack:
+
+                  | 2 | 3 | 7  |
+            res = | 9 | 5 | 10 | 11 |
+
+            Now the link becomes 11 <- 7 <- 3 <- 2.
+
+            The answer is the size of res/number of stacks, i.e 4.
+
+            And now since we are only using the top of stack and don't care about the rest of the elements below it,
+            we can just store the top of the stack in res, which reduces space complexity to O(n).
+
+            And since lowerbound is O(logn) as it uses binary search, doing it for n elements of the array uses O(n) time for a total of O(nlogn) time.
+
+            Time: O(nlogn), Space: O(n)
+
+            Note that this only stores the topological data needed solely to find the length of the LCS, it cannot be used to find the LCS itself.
+*/
+
+class Solution {
+public:
+    int lengthOfLISDP(const vector<int>& arr){
+        int n = arr.size(), mx=1;
+        vector<int> dp(n, 1);
+
+        for(int i=0; i<n; i++){
+            for(int j=0; j<i; j++)
+                if(arr[j]<arr[i]) dp[i]=max(dp[j]+1, dp[i]);
+            mx = max(dp[i], mx);
+        }
+
+        return mx;
+    }
+
+    int lb(const vector<int>& arr, int x){
+        int l=0, r=arr.size()-1, mid;
+        while(l<=r){
+            mid = l+(r-l>>1);
+            if(arr[mid]>=x) r=mid-1;
+            else l=mid+1;
+        }
+        return l;
+    }
+
+    int lengthOfLIS(const vector<int>& arr){
+        vector<int> res;
+
+        for(auto&c:arr){
+            int idx = lb(res, c);
+            if(idx >= res.size()) res.push_back(c);
+            else res[idx] = c;
+        }
+        return res.size();
+    }
+};
+
+int main(){
+    Solution sol;
+    vector<int> arr = {10,9,2,5,3,7,101,18};
+    cout<<sol.lengthOfLIS(arr)<<endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 1048 - Longest String Chain
+        Given a list of words, each word consists of English lowercase letters.
+        Let's say word1 is a predecessor of word2 if and only if we can add exactly one letter anywhere in word1 to make it equal to word2.
+        For example, "abc" is a predecessor of "abac".
+        A word chain is a sequence of words [word_1, word_2, ..., word_k] with k >= 1,
+        where word_1 is a predecessor of word_2, word_2 is a predecessor of word_3, and so on.
+        Return the longest possible length of a word chain with words chosen from the given list of words.
+
+        Intution:
+        We sort the words by length, and then we use the same logic as LIS, but instead of comparing the values, we compare the strings.
+        i.e if s1 is a predecessor of s2, then we can add a character to s1 to make it equal to s2.
+        So we just check if s1 is a predecessor of s2, and if it is, then we update dp[i] = max(dp[i], 1+dp[j])
+        Answer is max(dp[i])
+
+        Time: O(n^2), Space: O(n)
+*/
+
+class Solution {
+public:
+    inline bool compare(const string& s1, const string& s2) {
+        int m = s1.size(), n = s2.size(), i = 0, j = 0;
+        if ( m != n + 1 ) return false;
+
+        while ( i < m ) {
+            if ( s1[i] == s2[j] ) j++;
+            i++;
+        }
+        return i == m && j == n;
+    }
+
+    int lengthOfLISDP(vector<string>& arr) {
+        int n = arr.size(), mx = 1, idx = 0;
+        vector<int> dp(n, 1);
+
+        sort(arr.begin(), arr.end(), [](auto& s1, auto& s2) {return s1.size() < s2.size();});
+
+        for ( int i = 0; i < n; i++ ) {
+            for ( int j = 0; j < i; j++ )
+                if ( compare(arr[i], arr[j]) ) dp[i] = max(dp[j] + 1, dp[i]);
+            mx = max(dp[i], mx);
+        }
+
+        return mx;
+    }
+
+    int longestStrChain(vector<string>& words) {
+        return lengthOfLISDP(words);
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<string> arr = { "a","b","ba","bca","bda","bdca" };
+    cout << sol.longestStrChain(arr) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 332 - Coin Change
+        Given an array of coins and a total amount, find the minimum number of coins required to make up that amount.
+        Infinite supply of each coin. Sorted array of coins.
+
+        DP[n+1][amount+1]
+
+        (Space Optimized 2 only)
+        As 1<=coins[i]<=amount, dp[0] = 0 as we cannot use any coin to make up 0 amount
+        We set all other cases to a sentiel say INT_MAX-1
+
+        We go from i=1->amount and for each i, we go through all coins and check if we can use that coin to make up the amount
+        If coin is greater than amount, we stop checking for that amount as all coins will be greater than amount
+
+        For i=1 to amount
+            For c=0 to n-1
+                if coins[c]>i break
+                dp[i] = min(dp[i], dp[i-coins[c]]+1)
+
+        Answer = dp[amount]
+
+        Time Complexity: O(n*amount), Space Complexity: O(amount)
+*/
+
+
+class Solution {
+public:
+    int coinChangeDPSpace2(const int amount, vector<int>& coins) {
+        vector<int> dp(amount + 1, INT_MAX - 1); dp[0] = 0;
+
+        sort(coins.begin(), coins.end());
+
+        for ( int i = 1; i <= amount; i++ ) {
+            for ( auto& c : coins ) {
+                if ( c > i ) break; // if sorted
+                if ( c <= i ) dp[i] = min(dp[i], dp[i - c] + 1);
+            }
+        }
+
+        return ( dp[amount] == INT_MAX - 1 ) ? -1 : dp[amount];
+    }
+
+    int coinChangeDPSpace(const int amount, const vector<int>& coins) {
+        int n = coins.size();
+        vector<int> dp(amount + 1, 0), ndp(amount + 1, 0);
+        for ( int t = 0; t <= amount; t++ ) dp[t] = ( t % coins[0] == 0 ) ? t / coins[0] : 1e9;
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 1; x <= amount; x++ ) {
+                int notTake = dp[x];
+                int take = 1e9;
+                if ( coins[i] <= x ) take = 1 + ndp[x - coins[i]];
+                ndp[x] = min(notTake, take);
+            }
+            dp = ndp;
+        }
+        return dp[amount] == 1e9 ? -1 : dp[amount];
+    }
+
+    int coinChangeDP(const int amount, const vector<int>& coins) {
+        int n = coins.size();
+        vector<vector<int>> dp(n + 1, vector<int>(amount + 1, 0));
+        for ( int t = 0; t <= amount; t++ ) dp[0][t] = ( t % coins[0] == 0 ) ? t / coins[0] : 1e9;
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 1; x <= amount; x++ ) {
+                int notTake = dp[i - 1][x];
+                int take = 1e9;
+                if ( coins[i] <= x ) take = 1 + dp[i][x - coins[i]];
+                dp[i][x] = min(notTake, take);
+            }
+        }
+        return dp[n - 1][amount] == 1e9 ? -1 : dp[n - 1][amount];
+    }
+
+    int coinChangeRec(int i, int x, const vector<int>& coins, vector<vector<int>>& dp) {
+        if ( i == 0 ) return ( x % coins[i] == 0 ) ? x / coins[i] : 1e9;
+        if ( dp[i][x] != -1 ) return dp[i][x];
+
+        int notTake = coinChangeRec(i - 1, x, coins, dp);
+        int take = 1e9;
+        if ( coins[i] <= x ) take = 1 + coinChangeRec(i, x - coins[i], coins, dp);
+
+        return dp[i][x] = min(notTake, take);
+    }
+
+    int coinChange(vector<int>& coins, int amount) {
+        // vector<vector<int>> dp(coins.size()+1, vector<int>(amount+1, -1));
+        // int ans = coinChangeRec(coins.size()-1, amount, coins, dp);
+        // return ans==1e9?-1:ans;
+        return coinChangeDPSpace2(amount, coins);
+    }
+};#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 368 - Largest Divisible Subset
+        Find the largest subset of an array of integers, such that every pair (Si, Sj) of elements in this subset satisfies:
+            Si % Sj = 0 or Sj % Si = 0.
+        If there are multiple solutions, return any subset.
+
+        Same logic as printing LIS, but with a little modification:
+        We change the condition from arr[j]<arr[i] to arr[i]%arr[j]==0
+
+        Time complexity: O(n^2), Space complexity: O(n)
+*/
+
+class Solution {
+public:
+    vector<int> largestDivisibleSubset(vector<int>& arr) {
+        int n = arr.size();
+        vector<int> dp(n, 1), res(n, 0);
+
+        sort(arr.begin(), arr.end());
+
+        int mx = 1, idx = 0;
+        for ( int i = 0; i < n; i++ ) {
+            res[i] = i;
+            for ( int j = 0; j < i; j++ ) {
+                if ( arr[i] % arr[j] == 0 && dp[i] < dp[j] + 1 ) {
+                    dp[i] = dp[j] + 1;
+                    res[i] = j;
+                }
+            }
+            if ( dp[i] > mx ) {
+                mx = dp[i];
+                idx = i;
+            }
+        }
+
+        vector<int> ans { arr[idx] };
+        while ( res[idx] != idx ) {
+            idx = res[idx];
+            ans.push_back(arr[idx]);
+        }
+
+        return ans;
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> arr { 9,2,5,10,3,7,11 };
+    vector<int> res = s.largestDivisibleSubset(arr);
+    for ( auto& c : res ) cout << c << " ";
+    cout << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 416. Partition Equal Subset Sum
+        Given a non-empty array nums containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
+
+        Dividing an array into two subsets of equal sum means the sum of the array is even, as each subset will have sum of half of the main array.
+        If the sum is odd, we cannot divide the array into two subsets of equal sum.
+        So do subset sum with target = sum/2.
+
+        Remember to check (arr[0]<=target) and only then set dp[arr[0]]=1
+
+        Alternatively, we can use two 1D DP array of size target+1, one for current row and one for previous row.
+
+        Time Complexity: O(n*target), Space Optimized: O(target)
+*/
+
+class Solution {
+public:
+    bool isSubsetSumDP(const int target, const vector<int>& arr) {
+        int n = arr.size();
+        vector<bool> dp(target + 1, 0), ndp(target + 1, 0);
+
+        dp[0] = 1;
+        if ( arr[0] <= target ) dp[arr[0]] = 1;
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 0; x <= target; x++ )
+                ndp[x] = dp[x] | ( x >= arr[i] ? dp[x - arr[i]] : false );
+            dp = ndp;
+        }
+        return dp[target];
+    }
+
+    bool canPartition(vector<int>& nums) {
+        int s = accumulate(nums.begin(), nums.end(), 0);
+        return s % 2 == 0 && isSubsetSumDP(s / 2, nums);
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> nums { 1, 5, 11, 5 };
+    cout << s.canPartition(nums) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 446 - Arithmetic Slices II - Subsequence
+        Given an integer array nums, return the number of all the arithmetic subsequences of nums.
+        A sequence of numbers is called arithmetic if it consists of at least three elements and
+            if the difference between any two consecutive elements is the same.
+
+
+        We can use DP to solve this problem.
+        We can use a 2D DP array, where dp[i][diff] represents the number of arithmetic subsequences
+            ending at index i with difference diff.
+
+        So for every index i, we can check all the previous indices j, and see if the difference
+            between arr[i] and arr[j] is the same as diff.
+        If it is, then we can add dp[j][diff] to dp[i][diff], and also add 1 to dp[i][diff] because
+            we can also form a new arithmetic subsequence with arr[i] and arr[j].
+
+        Time complexity: O(n^2), Space complexity: O(n^2)
+*/
+
+class Solution {
+public:
+    int numberOfArithmeticSlicesDP(const vector<int>& arr) {
+        int n = arr.size(), ans = 0;
+        vector<unordered_map<long, int>> dp(n, unordered_map<long, int>{});
+
+        for ( int i = 0; i < n; i++ ) {
+            for ( int j = 0; j < i; j++ ) {
+                long diff = 0L + arr[i] - arr[j];
+                dp[i][diff] += dp[j][diff] + 1;
+                ans += dp[j][diff];
+            }
+        }
+        return ans;
+    }
+
+    int numberOfArithmeticSlices(const vector<int>& arr) {
+        return numberOfArithmeticSlicesDP(arr);
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> arr { 2,4,6,8,10 };
+    cout << s.numberOfArithmeticSlices(arr) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 494 - Target Sum
+        Given an array of integers nums and an integer target.
+        Insert + or - before each integer in nums to get target sum. Must use all integers in nums.
+        Return the number of ways to get target sum.
+
+        Use count partitions with given difference d: s1-s2=d where s1>s2 and s1+s2=sum. Adding both equations, we get s1=(sum+d)/2
+        Here d = target, which means we just need to find the number of partitions with difference (totalSum-target)/2
+
+        An edge case is when arr[0]==0, in that case set dp[0]=2. This is because we can either take 0 or not take 0 to get 0 sum,
+        otherwise we will get 0 sum only by not taking any element, hence set to dp[0]=1.
+
+
+        Time Complexity: O(n*target), Space Complexity: O(n*target), Space Optimized: O(target)
+*/
+
+class Solution {
+public:
+    int countSubsetSumDP(const int target, const vector<int>& arr) {
+        int n = arr.size();
+        vector<int> dp(target + 1, 0), ndp(target + 1, 0);
+
+        dp[0] = ( arr[0] == 0 ) ? 2 : 1;
+
+        if ( arr[0] != 0 && arr[0] <= target ) dp[arr[0]] = 1;
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 0; x <= target; x++ )
+                ndp[x] = dp[x] + ( x >= arr[i] ? dp[x - arr[i]] : 0 );
+            dp = ndp;
+        }
+
+        return dp[target];
+    }
+
+    int findTargetSumWaysDP(int target, const vector<int>& nums) {
+        int s = accumulate(nums.begin(), nums.end(), 0);
+        if ( s < target || ( s - target ) % 2 ) return 0;
+        return countSubsetSumDP(( s - target ) / 2, nums);
+    }
+
+    int findTargetSumWaysRec(const int i, const int target, const vector<int>& nums,
+        const int n, unordered_map<int, unordered_map<int, int>>& dp) {
+        if ( i == n ) return target == 0;
+        if ( dp[i].count(target) ) return dp[i][target];
+
+        return dp[i][target] = findTargetSumWaysRec(i + 1, target - nums[i], nums, n, dp) +
+            findTargetSumWaysRec(i + 1, target + nums[i], nums, n, dp);
+    }
+
+    int findTargetSumWays(const vector<int>& nums, int target) {
+        // unordered_map<int, unordered_map<int, int>> dp;
+        // return findTargetSumWaysRec(0, target, nums, nums.size(), dp);
+        return findTargetSumWaysDP(target, nums);
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> nums { 1, 1, 1, 1, 1 };
+    cout << s.findTargetSumWays(nums, 3) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 518 - Coin Change 2
+        Given an array of coins and a total amount, find the number of ways to make up that amount.
+        Infinite supply of each coin. Sorted array of coins.
+        Order of coins does not matter. [1,2] and [2,1] are same.
+
+        (Space Optimized 2 only)
+        dp[0] = 1 as we can make up 0 amount in 1 way, by not taking any coin, i.e empty set
+        We set all other cases to 0
+
+        We go from i=0->n-1 and for each i, we go through all amounts and check if we can use that coin to make up the amount
+        We start from x=coins[i] as we cannot make up amount less than coins[i] using coins[i]
+
+        As we can make by definition make (in a unique way) an amount k if there exists a coin of value k: dp[x-coins[i]] = dp[k-k] = dp[0] = 1 in the first iteration
+        This handles increasing the value of dp[x] when a coin of value x is encountered in coins array.
+
+        For i=0 to n-1
+            For x=coins[i] to amount
+                dp[x] += dp[x-coins[i]]
+
+        Answer = dp[amount]
+
+        Time Complexity: O(n*amount), Space Complexity: O(amount)
+*/
+
+class Solution {
+public:
+    int changeDPSpace2(const int amount, const vector<int>& coins) {
+        int n = coins.size();
+        vector<int> dp(amount + 1, 0); dp[0] = 1;
+
+        for ( int i = 0; i < n; i++ )
+            for ( int x = coins[i]; x <= amount; x++ )
+                dp[x] += dp[x - coins[i]];
+
+        return dp[amount];
+    }
+
+    int changeDPSpace(const int amount, const vector<int>& coins) {
+        int n = coins.size();
+        vector<int> dp(amount + 1, 0), ndp(amount + 1, 0);
+
+        for ( int i = 0; i <= amount; i++ ) dp[i] = i % coins[0] == 0;
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 0; x <= amount; x++ ) {
+                int notTake = dp[x], take = 0;
+                if ( x >= coins[i] ) take = ndp[x - coins[i]];
+                ndp[x] = take + notTake;
+            }
+            dp = ndp;
+        }
+        return dp[amount];
+    }
+
+    int changeDP(const int amount, const vector<int>& coins) {
+        int n = coins.size();
+        vector<vector<int>> dp(n, vector<int>(amount + 1, 0));
+
+        for ( int i = 0; i <= amount; i++ ) dp[0][i] = i % coins[0] == 0;
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 0; x <= amount; x++ ) {
+                int notTake = dp[i - 1][x], take = 0;
+                if ( x >= coins[i] ) take = dp[i][x - coins[i]];
+                dp[i][x] = take + notTake;
+            }
+        }
+        return dp[n - 1][amount];
+    }
+
+    int changeRec(int i, int x, const vector<int>& coins, vector<vector<int>>& dp) {
+        if ( i == 0 ) return x % coins[i] == 0;
+        if ( dp[i][x] != -1 ) return dp[i][x];
+
+        int notTake = changeRec(i - 1, x, coins, dp), take = 0;
+        if ( x >= coins[i] ) take = changeRec(i, x - coins[i], coins, dp);
+        return dp[i][x] = take + notTake;
+    }
+
+    int change(int amount, vector<int>& coins) {
+        // vector<vector<int>> dp(coins.size(), vector<int>(amount+1, -1));
+        // return changeRec(coins.size()-1, amount, coins, dp);
+        return changeDPSpace2(amount, coins);
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> coins = { 1,2,5 };
+    cout << s.change(5, coins) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 673 - Number of Longest Increasing Subsequence
+        Given an integer array nums, return the number of longest increasing subsequences.
+
+        We use cnt[i] to keep track of the number of LIS of length dp[i] ending at index i.
+        The answer is the sum of all cnt[i] where dp[i] is the maximum length of LIS.
+        The count will only increase if the length of LIS increases by 1, i.e dp[i]=dp[j]+1, where j<i,
+        else it just takes the value of cnt[j].
+
+        DP[n] = cnt[n] = {1}
+        For i=1->n-1
+            For j=0->i-1
+                if arr[j]<arr[i] && dp[j]+1>dp[i]: dp[i]=dp[j]+1, cnt[i]=cnt[j]
+                if arr[j]<arr[i] && dp[j]+1==dp[i]: cnt[i]+=cnt[j]
+
+        sum = 0
+        For i=0->n-1
+            if dp[i]==mx: sum+=cnt[i]
+
+        Answer is sum
+
+    Time: O(n^2), Space: O(n)
+*/
+
+class Solution {
+public:
+    int findNumberOfLISDP(const vector<int>& arr) {
+        int n = arr.size(), mx = 1, idx = 0;
+        vector<int> dp(n, 1), cnt(n, 1);
+
+        for ( int i = 0; i < n; i++ ) {
+            for ( int j = 0; j < i; j++ ) {
+                if ( arr[j]<arr[i] && dp[j] + 1>dp[i] ) {
+                    dp[i] = dp[j] + 1;
+                    cnt[i] = cnt[j];
+                }
+                else if ( arr[j] < arr[i] && dp[j] + 1 == dp[i] ) {
+                    cnt[i] += cnt[j];
+                }
+            }
+            mx = max(dp[i], mx);
+        }
+
+        int sum = 0;
+        for ( int i = 0; i < n; i++ )
+            if ( mx == dp[i] ) sum += cnt[i];
+
+        return sum;
+    }
+
+    int findNumberOfLIS(vector<int>& nums) {
+        return findNumberOfLISDP(nums);
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<int> arr = { 1,3,5,4,7 };
+    cout << sol.findNumberOfLIS(arr) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Given an array of non-negative integers, and a value sum, determine if there is a SUBSEQUENCE of the given array with sum equal to given sum.
+
+    Two cases:
+        1. Take the element (iff target-arr[i]>=0)
+        2. Dont take the element
+
+    DP[n+1][target+1] = false
+    Base case:
+        DP[i][0]=true for all i
+        DP[0][arr[0]]=true
+
+    From i=1 to n-1
+        From x=1 to target
+            DP[i][x] = DP[i-1][x] | (x>=arr[i]?DP[i-1][x-arr[i]]:false)
+
+    Answer = DP[n-1][target]
+
+    Alternatively, we can use two 1D DP array of size target+1, one for current row and one for previous row.
+
+    Time Complexity: O(n*target), Space Complexity: O(n*target), Space Optimized: O(target)
+
+*/
+
+class Solution {
+public:
+    bool isSubsetSumDPSpace(const int target, const vector<int>& arr) {
+        int n = arr.size();
+        vector<bool> dp(target + 1, 0), ndp(target + 1, 0);
+        dp[0] = ndp[0] = dp[arr[0]] = 1;
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 1; x <= target; x++ )
+                ndp[x] = dp[x] | ( x >= arr[i] ? dp[x - arr[i]] : false );
+            dp = ndp;
+        }
+        return dp[target];
+    }
+
+    bool isSubsetSumDP(const int target, const vector<int>& arr) {
+        int n = arr.size();
+        vector<vector<bool>> dp(n + 1, vector<bool>(target + 1, 0));
+        for ( auto& v : dp ) v[0] = 1;
+        dp[0][arr[0]] = 1;
+
+
+        for ( int i = 1; i < n; i++ ) {
+            for ( int x = 1; x <= target; x++ ) {
+                bool p = dp[i - 1][x]; // Not take case
+                if ( x >= arr[i] ) p |= dp[i - 1][x - arr[i]]; // Take if target doesnt become negative
+                dp[i][x] = p;
+            }
+        }
+        return dp[n - 1][target];
+    }
+
+    bool isSubsetSumRec(int i, const int x, const vector<int>& arr, vector<vector<int>>& dp) {
+        if ( x == 0 ) return true;
+        if ( i == 0 ) return x == arr[0];
+        if ( dp[i][x] != -1 ) return dp[i][x];
+
+        bool p = isSubsetSumRec(i - 1, x, arr, dp); // Not take case
+        if ( x >= arr[i] ) p |= isSubsetSumRec(i - 1, x - arr[i], arr, dp); // Take if target doesnt become negative
+
+        return dp[i][x] = p;
+    }
+
+    bool isSubsetSumRecDFS(int i, const int x, const vector<int>& arr, vector<vector<int>>& dp) { // Dont use, harder to tabulate
+        if ( x == 0 ) return true;
+        if ( x < 0 || i >= arr.size() ) return false;
+        if ( dp[i][x] != -1 ) return dp[i][x];
+        bool p = false;
+        for ( int j = i; !p && j < arr.size(); j++ ) {
+            if ( x >= arr[j] ) p |= ( dp[j][x - arr[j]] = isSubsetSumRecDFS(j + 1, x - arr[j], arr, dp) );
+        }
+        return dp[i][x] = p;
+    }
+
+    bool isSubsetSum(vector<int>arr, int sum) {
+        // vector<vector<int>> dp(arr.size()+1, vector<int>(sum+1, -1));
+        // return isSubsetSumRec(arr.size()-1, sum, arr, dp);
+        return isSubsetSumDPSpace(sum, arr);
+    }
+};
+
+int main() {
+    Solution s;
+    cout << s.isSubsetSum({ 100 }, 50) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    0/1 Knapsack Problem
+        Given weights and values of n items, put these items in a knapsack of capacity W to get the maximum total value in the knapsack.
+        You cannot break an item, either pick the complete item or don’t pick it (0-1 property).
+
+        DP[n+1][W+1]
+        Base Case: DP[0][x]=0 for all x
+        Base Case: DP[i][0]=0 for all i
+
+        If we dont take the ith item, we just do i+1 and W
+        If we take the ith item, we do i+1 and W-wt[i]
+        Then we do max of both as max(take, notTake), where take = (i+1, W, 0) and notTake = (i+1, W-wt[i], val[i])
+
+        Converting to tabular form we will go with x=W->1 and i=n-1=>0
+
+        For i=n-1 to 0
+            For x=W to 1
+                DP[i][x] = max(DP[i+1][x], (x>=wt[i]?val[i]+DP[i+1][x-wt[i]]:0))
+
+        Answer = DP[0][W]
+
+        Alternatively, we can use a single 1D DP array of size W+1, as the previous row is
+        the same as the current row when we move from x=W->1 as it will not modify the values on the right when moving right to left.
+
+        Recursive Solution(without Memo):
+            Time Complexity: O(2^n), Space Complexity: O(n)
+
+        Recursive Solution(with Memo):
+            Time Complexity: O(n*W), Space Complexity: O(n*W)
+
+        DP Solution:
+            Time Complexity: O(n*W), Space Complexity: O(n*W), Space Optimized: O(W)
+*/
+
+class Solution {
+public:
+    int knapsackDPSpace(int W, vector<int> wt, vector<int> val, int n) {
+        vector<int> dp(W + 1, 0);
+        for ( int i = n - 1; i >= 0; i-- )
+            for ( int x = W; x >= 0; x-- )
+                if ( x >= wt[i] ) dp[x] = max(dp[x], val[i] + dp[x - wt[i]]);
+        return dp[W];
+    }
+
+    int knapsackDP(int W, vector<int> wt, vector<int> val, int n) {
+        vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int x = 1; x <= W; x++ ) {
+                int notTake = dp[i + 1][x];
+                int take = 0;
+                if ( x >= wt[i] ) take = val[i] + dp[i + 1][x - wt[i]];
+
+                dp[i][x] = max(notTake, take);
+            }
+        }
+        return dp[0][W];
+    }
+
+    int knapsackRec(int i, int W, const vector<int>& wt, const vector<int>& val, const int n, vector<vector<int>>& dp) {
+        if ( i == n ) return 0;
+        if ( dp[i][W] != -1 ) return dp[i][W];
+
+        int notTake = knapsackRec(i + 1, W, wt, val, n, dp);
+        int take = 0;
+        if ( wt[i] <= W ) take = val[i] + knapsackRec(i + 1, W - wt[i], wt, val, n, dp);
+
+        return dp[i][W] = max(notTake, take);
+    }
+
+    int knapsack(int W, vector<int> wt, vector<int> val, int n) {
+        // vector<vector<int>> dp(n+1, vector<int>(W+1, -1));
+        // return knapsackRec(0, W, wt, val, n, dp);
+        return knapsackDPSpace(W, wt, val, n);
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> val = { 60, 100, 120 };
+    vector<int> wt = { 10, 20, 30 };
+    cout << s.knapsack(50, wt, val, 3) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Unbounded Knapsack Problem
+        Given weights and values of n items, put these items in a knapsack of capacity W to get the maximum total value in the knapsack.
+        You cannot break an item, either pick the complete item or don’t pick it (0-1 property). You can pick an item infinite times.
+
+        Solution is essentially the same as 0/1 knapsack, in this case we just stay at the same item when we take it, i.e i and not i+1
+        So notTake is the same but for take we do (i, W-wt[i], val[i]) instead of (i+1, W-wt[i], val[i]).
+
+        For space optimized, we go from x=0->W instead of x=W->1.
+
+        (Space Optimized only)
+        dp[0] = 0 as we cannot make up 0 amount using any value as 1<=val[i]
+
+        We go from i=n-1=>0 and for each i we calculate all the value for the weights weights using dp[x] = max(dp[x], val[i] + dp[x-wt[i]]) where x=0->W
+
+        For i=n-1 to 0
+            For x=0 to W
+                dp[x] = max(dp[x], (x>=wt[i]?val[i]+dp[x-wt[i]]:0))
+
+        Answer = dp[W]
+
+        Time Complexity: O(n*W), Space Complexity: O(W)
+
+*/
+
+class Solution {
+public:
+    int knapsackDPSpace(int W, int* wt, int* val, int n) {
+        vector<int> dp(W + 1, 0);
+        for ( int i = n - 1; i >= 0; i-- )
+            for ( int x = 0; x <= W; x++ )
+                if ( x >= wt[i] ) dp[x] = max(dp[x], val[i] + dp[x - wt[i]]);
+        return dp[W];
+    }
+
+    int knapsackDP(int W, int* wt, int* val, int n) {
+        vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int x = 1; x <= W; x++ ) {
+                int notTake = dp[i + 1][x];
+                int take = 0;
+                if ( x >= wt[i] ) take = val[i] + dp[i][x - wt[i]];
+
+                dp[i][x] = max(notTake, take);
+            }
+        }
+        return dp[0][W];
+    }
+
+    int knapsackRec(int i, int W, int val[], int wt[], int n, vector<vector<int>>& dp) {
+        if ( i == n ) return 0;
+        if ( dp[i][W] != -1 ) return dp[i][W];
+
+        int notTake = knapsackRec(i + 1, W, val, wt, n, dp), take = 0;
+        if ( W >= wt[i] ) take = val[i] + knapsackRec(i, W - wt[i], val, wt, n, dp);
+
+        return dp[i][W] = max(take, notTake);
+    }
+
+    int knapSack(int n, int W, int val[], int wt[]) {
+        // vector<vector<int>> dp(n+1, vector<int>(W+1, -1));
+        // return knapsackRec(0, W, val, wt, n, dp);
+        return knapsackDPSpace(W, wt, val, n);
+    }
+};
+
+int main() {
+    Solution s;
+    int val[] = { 60, 100, 120 };
+    int wt[] = { 10, 20, 30 };
+    cout << s.knapSack(3, 50, val, wt) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Rod/Log Cutting
+        Given a log/rod of length N, an array of length N, with each index i having a price of cutting the log at that index.(1-indexed)
+        That is, if length of rod is 1, its price is equal to price[1], if length is 2, its price is equal to price[2] and so on.
+        Find the maximum price that can be obtained by cutting the rod in any way.
+
+        (Space Optimized only)
+        Since question has given 1-indexed price array, we will make a new array p of size N+1, where p[i] = price[i-1] and p[0] = 0
+        This is done to make it 0-indexed and also to make p[0] = 0, as we cannot cut a log of length 0 and the price of cutting a log of length 0 is 0.
+
+        dp[0] = 0 as base case
+        We go from i=1->N and for each i, we go from j=i->N and update dp[j] as max(dp[j], p[i]+dp[j-i])
+        This is because we can either not cut the log at all, or cut it at index i, and then cut the remaining log of length j-i.
+
+        For i=1 to N
+            For j=i to N
+                dp[j] = max(dp[j], p[i]+dp[j-i])
+
+        Answer = dp[N]
+
+        Time Complexity: O(N^2), Space Complexity: O(N)
+*/
+
+class Solution {
+public:
+    int cutRodDPSpace(int price[], int N) {
+        vector<int> dp(N + 1, 0), p { 0 };
+        for ( int i = 0; i < N; i++ ) p.push_back(price[i]);
+
+        for ( int i = 1; i <= N; i++ )
+            for ( int j = i; j <= N; j++ )
+                dp[j] = max(dp[j], p[i] + dp[j - i]);
+        return dp[N];
+    }
+
+    int cutRodDP(int price[], int N) {
+        vector<vector<int>> dp(N + 1, vector<int>(N + 1, 0));
+        for ( int n = 0; n <= N; n++ ) dp[0][n] = n * price[0];
+
+        for ( int i = 1; i < N; i++ ) {
+            for ( int n = 1; n <= N; n++ ) {
+                dp[i][n] = dp[i - 1][n];
+                if ( n >= i + 1 ) dp[i][n] = max(dp[i][n], price[i] + dp[i][n - i - 1]);
+            }
+        }
+        return dp[N - 1][N];
+    }
+
+    int cutRodRec(int i, int n, int* price, vector<vector<int>>& memo) {
+        if ( i == 0 ) return n * price[0];
+        if ( memo[i][n] != -1 ) return memo[i][n];
+
+        int notCut = cutRodRec(i - 1, n, price, memo), cut = -1e9;
+        if ( n >= i + 1 ) cut = price[i] + cutRodRec(i, n - i - 1, price, memo);
+
+        return memo[i][n] = max(notCut, cut);
+    }
+
+    int cutRod(int price[], int n) {
+        // vector<vector<int>> memo(n+1, vector<int>(n+1, -1));
+        // return cutRodRec(n-1, n, price, memo);
+        return cutRodDPSpace(price, n);
+    }
+};
+
+int main() {
+    Solution s;
+    int price[] = { 1, 5, 8, 9, 10, 17, 17, 20 };
+    cout << s.cutRod(price, 8) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Printing a Longest Increasing Subsequence
+        Given an array of integers, find the longest increasing subsequence in this array.
+        If there are multiple solutions, return any subsequence.
+
+        We use the same logic as finding the length of the LIS(using DP LIS, not binary search DP).
+        But we also use a mapping array to keep track of the previous index of the element in the LIS, i.e res
+
+        Basically when we start from a new i, we set res[i]=i, to indicate that the current element is currently the root of the LIS ending at i.
+        Then we check for all j<i, if arr[j]<arr[i] and dp[i]<dp[j]+1, then we update dp[i] and res[i] to j, to indicate that the current element is now the root of the LIS ending at i.
+
+        Then we find the index of the maximum element in dp, and use that index to rebuild the LIS using res.
+
+        i.e we start from the index of the maximum element in dp, and we use the index stored in res to find the previous element in the LIS, and we keep doing this until we reach the root of the LIS, i.e res[idx]==idx
+
+            idx = max(dp)
+            ans[0] = arr[idx]
+
+            While res[idx]!=idx:
+                idx = res[idx]
+                ans.append(arr[idx])
+
+            reverse(ans)
+            return ans
+
+        We reverse the output array at the end as the LIS will be built in reverse. Alternatively, you can reserve space
+        and use a pointer to the end of the array to build the LIS in correct order.
+
+        Time complexity: O(n^2), Space complexity: O(n)
+*/
+
+vector<int> printLIS(const vector<int>& arr, int n) {
+    vector<int> dp(n, 1), res(n, 0);
+    int mx = 1, idx = 0;
+    for ( int i = 0; i < n; i++ ) {
+        res[i] = i;
+        for ( int j = 0; j < i; j++ ) {
+            if ( arr[j] < arr[i] && dp[i] < dp[j] + 1 ) {
+                dp[i] = dp[j] + 1;
+                res[i] = j;
+            }
+        }
+        if ( dp[i] > mx ) {
+            mx = dp[i];
+            idx = i;
+        }
+    }
+
+    vector<int> ans;
+    ans.push_back(arr[idx]);
+    while ( res[idx] != idx ) {
+        idx = res[idx];
+        ans.push_back(arr[idx]);
+    }
+    reverse(ans.begin(), ans.end());
+    return ans;
+}
+
+int main() {
+    vector<int> arr { 9,2,5,10,3,7,11 };
+    int n = arr.size();
+    vector<int> res = printLIS(arr, n);
+    for ( auto& c : res ) cout << c << " ";
+    cout << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Length of Longest Bitonic Subsequence
+        A subsequence of a given sequence is called Bitonic if it is first increasing, then decreasing.
+        Example: {1,2,3,4,5,6,7,8,9} is a bitonic sequence as its increase before 5 and decreasing after 5,
+                but {1,2,3,4,5,6,7,8,9,8,7,6,5,4,3} is not.
+
+        Note that the sequence can be strictly increasing or decreasing, i.e {1,2,3,4,5,6,7,8,9} is a bitonic sequence.
+
+        The idea here is to find the LIS for the array in both directions, i.e from left to right and right to left.
+        This gives us the length of the increasing subsequence ending at each index from the left and
+        the length of the decreasing subsequence starting at each index from the right.
+
+        Then we just find the maximum of the sum of the two values at each index, and subtract 1 from it
+        as otherwise we will be counting the element at that index twice.
+
+        DP[n] = DPReverse[n] = {1}
+        For i=1->n-1
+            For j=0->i-1
+                if arr[i] > arr[j]: DP[i] = max(DP[i], DP[j]+1)
+                if arr[n-i-1] > arr[n-j-1]: DPReverse[n-i-1] = max(DPReverse[n-i-1], DPReverse[n-j-1]+1)
+
+        Max = 0
+        For i=0->n-1
+            Max = max(Max, DP[i]+DPReverse[i]-1)
+
+        Answer is Max
+
+        Time: O(n^2), Space: O(n)
+*/
+
+class Solution {
+public:
+    int lengthOfLBS(vector<int>& arr) {
+        int n = arr.size(), mx = 1;
+        vector<int> dp(n, 1), dpReverse(n, 1);
+
+        for ( int i = 0; i < n; i++ ) {
+            for ( int j = 0; j < i; j++ ) {
+                if ( arr[j] < arr[i] ) dp[i] = max(dp[j] + 1, dp[i]);
+                if ( arr[n - j - 1] < arr[n - i - 1] ) dpReverse[n - i - 1] = max(dpReverse[n - j - 1] + 1, dpReverse[n - i - 1]);
+            }
+        }
+        for ( int i = 0; i < n; i++ ) mx = max(mx, dp[i] + dpReverse[i] - 1);
+
+        return mx;
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> arr = { 0,2,3,4,100,6,7,8,9,8,7,6,100,4,3 };
+    cout << s.lengthOfLBS(arr) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leecode 516 - Longest Palindromic Subsequence
+        Given a string, find the length of its longest palindromic subsequence.
+        If there is no palindromic subsequence, return 0.
+
+        Essentially its just LCS of the string and its reverse.
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+*/
+
+class Solution {
+public:
+    int lcsDPSpace(const string& s1, const string& s2){
+        int n=s1.size(), m=s2.size();
+        vector<int> dp(m+1, 0), ndp(m+1, 0);
+
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=m; j++){
+                if(s1[i-1]==s2[j-1]) ndp[j] = 1 + dp[j-1];
+                else ndp[j] = max(dp[j], ndp[j-1]);
+            }
+            dp = ndp;
+        }
+        return dp[m];
+    }
+
+    int longestPalindromeSubseq(const string& s) {
+        return lcsDPSpace(s, string(s.rbegin(), s.rend()));
+    }
+};
+
+int main(){
+    Solution s;
+    string s1 = "bbbab";
+    cout << s.longestPalindromeSubseq(s1) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 1092 - Shortest Common Supersequence
+        Given two strings s1 and s2, return the shortest string that has both s1 and s2 as subsequences.
+        If multiple answers exist, you may return any of them.
+
+        We'll do this similar to how we print the LCS. We populate the DP table.
+        Then we start from dp[n][m] and go backwards, if its part of the lcs, then we add it once and decrement i and j both.
+        Else we only add the character from the string whose pointer is being moved back.
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+*/
+
+class Solution {
+public:
+    int lcsDP(const string& s1, const string& s2, vector<vector<int>>& dp) {
+        int n = s1.size(), m = s2.size();
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                int ans = 0;
+                if ( s1[i - 1] == s2[j - 1] ) ans = 1 + dp[i - 1][j - 1];
+                else ans = max(dp[i - 1][j], dp[i][j - 1]);
+                dp[i][j] = ans;
+            }
+        }
+        return dp[n][m];
+    }
+
+    string shortestCommonSupersequence(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size(); string lcs;
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+        lcs.resize(n + m - lcsDP(s1, s2, dp));
+        int i = n, j = m, k = lcs.size() - 1;
+
+        while ( i > 0 && j > 0 ) {
+            if ( s1[i - 1] == s2[j - 1] ) {
+                lcs[k--] = s1[i - 1];
+                i--; j--;
+            }
+            else if ( dp[i - 1][j] > dp[i][j - 1] ) lcs[k--] = s1[--i];
+            else lcs[k--] = s2[--j];
+        }
+        while ( i > 0 ) lcs[k--] = s1[--i];
+        while ( j > 0 ) lcs[k--] = s2[--j];
+        return lcs;
+    }
+};
+
+int main() {
+    Solution s;
+    string s1 = "abac", s2 = "cab";
+    cout << s.shortestCommonSupersequence(s1, s2) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 115 - Distinct Subsequences
+        Given two strings s(n) and t(m), return the number of distinct subsequences of s which equals t.
+        Example: s = "babgbag", t = "bag", ans = 5
+
+        We'll just recurse over the strings and use a pick/not pick logic.
+        We'll always consider the not pick case, and if the characters match, we'll consider the pick case as well.
+        Not pick: (i, j) -> (i-1, j)
+        Pick: (i, j) -> (i-1, j-1)
+
+        Answer is the sum of both cases. We start from n-1 and m-1
+
+        For DP, dp[i][j] = dp[i-1][j] + (s[i]==t[j])*dp[i-1][j-1]. Base case is dp[i][0]=1 for all i
+        We can optimize the space to O(m) by using a 1D array.
+        As the right values are not being used after j passes over them, we'll go j=m->1 instead of j=1->m.
+        So, we get base case as dp[0] = 1 and the loop becomes:
+
+        For i=1->n:
+            for j=m->1:
+                if(s[i]==t[j]) dp[j] += dp[j-1]
+
+        Answer is in dp[m]
+
+        Note: For leetcode, it can produce an overflow issue with dp table, even if we use long long.
+        Unsigned long long can work, but just use this condition instead:
+            if(s[i]==t[j] && dp[i][j]<INT_MAX-dp[i-1][j-1])
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+*/
+
+class Solution {
+public:
+    int numDistinctDPSpace(const string& s, const string& t) {
+        int n = s.size(), m = t.size();
+        vector<int> dp(m + 1, 0); dp[0] = 1;
+
+        for ( int i = 1; i <= n; i++ )
+            for ( int j = m; j >= 1; j-- )
+                if ( s[i - 1] == t[j - 1] ) dp[j] += dp[j - 1];
+
+        return dp[m];
+    }
+
+    int numDistinctDP(const string& s, const string& t) {
+        int n = s.size(), m = t.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        for ( auto& v : dp ) v[0] = 1;
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                dp[i][j] = dp[i - 1][j];
+                if ( s[i - 1] == t[j - 1] ) dp[i][j] += dp[i - 1][j - 1];
+            }
+        }
+        return dp[n][m];
+    }
+
+    int numDistinctRec(int i, int j, const string& s, const string& t, vector<vector<int>>& dp) {
+        if ( i < 0 || j < 0 ) return j < 0;
+        if ( dp[i][j] != -1 ) return dp[i][j];
+
+        int notTake = numDistinctRec(i - 1, j, s, t, dp), take = 0;
+        if ( s[i] == t[j] ) take = numDistinctRec(i - 1, j - 1, s, t, dp);
+
+        return dp[i][j] = notTake + take;
+    }
+
+    int numDistinct(const string& s, const string& t) {
+        // int n = s.size(), m = t.size();
+        // vector<vector<int>> dp(n+1, vector<int>(m+1, -1));
+        // return numDistinctRec(s.size()-1, t.size()-1, s, t, dp);
+        return numDistinctDPSpace(s, t);
+    }
+};
+
+int main() {
+    Solution s;
+    string s1 = "babgbag", s2 = "bag";
+    cout << s.numDistinct(s1, s2) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leecode 1312 - Minimum Insertion Steps to Make a String Palindrome
+        Given a string s. In one step you can insert any character at any index of the string.
+        Return the minimum number of steps to make s palindrome.
+        A Palindrome String is one that reads the same backward as well as forward.
+
+        Assume the string is abcda, then LPS of the string is aca. To make it a palindrome, we insert b and d as follows:
+            abcda -> abcdba -> abdcdba
+        Essentially its just size of the string minus LPS of the string, i.e s.size()-LPS(s).
+        This is because LPS gives us the length of the longest palindromic part, so substracting gives the longest non-palindromic part.
+        And to make the string a palindrome, we need to insert the non-palindromic part in reverse order.
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+*/
+
+class Solution {
+public:
+    int lcsDPSpace(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size();
+        vector<int> dp(m + 1, 0), ndp(m + 1, 0);
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                if ( s1[i - 1] == s2[j - 1] ) ndp[j] = 1 + dp[j - 1];
+                else ndp[j] = max(dp[j], ndp[j - 1]);
+            }
+            dp = ndp;
+        }
+        return dp[m];
+    }
+
+    int longestPalindromeSubseq(const string& s) {
+        return lcsDPSpace(s, string(s.rbegin(), s.rend()));
+    }
+
+    int minInsertions(const string& s) {
+        return s.size() - longestPalindromeSubseq(s);
+    }
+};
+
+int main() {
+    Solution s;
+    string s1 = "zzazz";
+    cout << s.minInsertions(s1) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 44 - Wildcard Matching
+        Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*' where:
+            '?' Matches any single character.
+            '*' Matches any sequence of characters (including the empty sequence).
+        The matching should cover the entire input string (not partial).
+
+        Base Case:
+            dp[0][0] = 1
+            dp[0][j] = (p[j]=='0') for k=1..j for j=1..m, which means that if the pattern is all '*' then it matches the empty string
+
+        In the pattern a '?' is the same as a normal match, in which case we move both pointers backward (as we are starting from the end)
+        In the pattern a '*' can be either a match or skip, in which case we take the OR of the two cases:
+            Skip: (i, j) -> (i, j-1), i.e move pattern pointer backward while keeping string pointer at the same position
+            Match: (i, j) -> (i-1, j), i.e move string pointer backward while keeping pattern pointer at the same position
+
+        The DP solution is as follows:
+
+        DP[n+1][m+1] = {false}
+        For i=1->n
+            For j=1->m
+                If (p[j] == '?') OR (s[i] == p[j]): then dp[i][j] = dp[i-1][j-1]
+                If (p[j] == '*'): then dp[i][j] = dp[i][j-1] || dp[i-1][j]
+
+        Answer is dp[n][m]
+
+        Alternatively we can use two 1D arrays to store the previous and current rows of the DP table, which reduces the space complexity to O(m)
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+*/
+
+class Solution {
+public:
+    bool isMatchDP(const string& s, const string& p) {
+        int n = s.size(), m = p.size();
+        vector<vector<bool>> dp(n + 1, vector<bool>(m + 1, false));
+
+        dp[0][0] = 1;
+        for ( int j = 1; j <= m; j++ ) {
+            dp[0][j] = true;
+            for ( int k = 1; dp[0][j] && k <= j; k++ )
+                if ( p[k - 1] != '*' ) dp[0][j] = false;
+        }
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                if ( p[j - 1] == '?' || s[i - 1] == p[j - 1] ) dp[i][j] = dp[i - 1][j - 1];
+                if ( p[j - 1] == '*' ) dp[i][j] = dp[i][j - 1] || dp[i - 1][j];
+            }
+        }
+        return dp[n][m];
+    }
+
+    bool isMatchRec(int i, int j, const string& s, const string& p, vector<vector<int>>& dp) {
+        if ( i < 0 && j < 0 ) return 1;
+        if ( i >= 0 && j < 0 ) return 0;
+        if ( i < 0 && j >= 0 ) {
+            for ( int k = 0; k <= j; k++ ) if ( p[k] != '*' ) return false;
+            return true;
+        }
+        if ( dp[i][j] != -1 ) return dp[i][j];
+
+        bool res = false;
+
+        if ( p[j] == '?' || s[i] == p[j] ) res = isMatchRec(i - 1, j - 1, s, p, dp);
+        if ( p[j] == '*' ) res = isMatchRec(i, j - 1, s, p, dp) || isMatchRec(i - 1, j, s, p, dp);
+
+        return dp[i][j] = res;
+    }
+
+    bool isMatch(const string& s, const string& p) {
+        // int n = s.size(), m = p.size();
+        // vector<vector<int>> dp(n+1, vector<int>(m+1, -1));
+        // return isMatchRec(n-1, m-1, s, p, dp);
+        return isMatchDP(s, p);
+    }
+};
+
+int main() {
+    Solution s;
+    cout << s.isMatch("aa", "a") << endl;
+    cout << s.isMatch("aa", "*") << endl;
+    cout << s.isMatch("cb", "?a") << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leecode 583 - Delete Operation for Two Strings
+        Given two strings word1 and word2, return the minimum number of steps required to make word1 and word2 the same.
+        In one step, you can delete exactly one character in either string.
+
+        Lets take 2 strings s1="sea" and s2="eat". To make them same, we need to delete "s" and "t" from s1 and s2 respectively.
+        The LCS of s1 and s2 is "ea", so to convert s1 to the LCS, we need to delete "s" from the LCS, similarly for s2.
+        Hence the answer is s1.size()+s2.size()-2*LCS(s1, s2).
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+
+*/
+
+class Solution {
+public:
+    int lcsDPSpace(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size();
+        vector<int> dp(m + 1, 0), ndp(m + 1, 0);
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                if ( s1[i - 1] == s2[j - 1] ) ndp[j] = 1 + dp[j - 1];
+                else ndp[j] = max(dp[j], ndp[j - 1]);
+            }
+            dp = ndp;
+        }
+        return dp[m];
+    }
+
+    int minDistance(const string& w1, const string& w2) {
+        return w1.size() + w2.size() - 2 * lcsDPSpace(w1, w2);
+    }
+};
+
+int main() {
+    Solution s;
+    string s1 = "sea", s2 = "eat";
+    cout << s.minDistance(s1, s2) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+/*
+    LeetCode 639 - Decode Ways II
+        Given string s with numbers and *, convert to letters based on alphabetical order, i.e 1->A, 2->B, etc
+        * represents wildcard, can be any number from 1 to 9
+        Return the number of ways to decode the string
+
+        DP solution, base case is dp[n]=1 as empty string has 1 way to decode
+        If s[i]=='0', then dp[i]=0 as 0 cannot be decoded. We go from i= n-1 => 0 | inclusive
+
+        If s[i] is a * then it can be decoded to 9 letters, so dp[i] += 9 * dp[i+1]
+            If s[i+1] is a * then (s[i],s[i+1]) can be 15 letters from 11 to 26 => 26-11 = 15.
+                Hence dp[i] = 15 * dp[i+2]
+            Else s[i+1] is a digit. Then the * in s[i] can either be 1 or 2,
+                so dp[i] += (s[i+1]>='7'?1:2) * dp[i+2]:
+
+                As if its 1<=s[i]<=6 then * can be 1 or 2, i.e 11 to 16 or 21 to 26, so 2 ways to decode
+                Else if its 7<=s[i]<=9 then * can only be 1, i.e 17 to 19, so 1 way to decode
+
+        If s[i] is not a * then its just a single letter, so dp[i] += dp[i+1]
+            If s[i+1] is not a *, then its a digit and (s[i],s[i+1]) can be decoded to
+                letters from 10 to 26, if yes then do dp[i] += dp[i+2]
+
+            Else if s[i+1] is a *, then two possibilities depending on value of s[i]
+                If s[i] is 1, then * can be 1 to 9, i.e 11 to 19, so dp[i] += 9 * dp[i+2]
+                Else if s[i] is 2, then * can be 1 to 6, i.e 21 to 26, so dp[i] += 6 * dp[i+2]
+
+        Alternatively as only two previous states are required, we can use three variables instead of an array (2 for past states: dp[i+1], dp[i+2], 1 for current state: dp[i])
+
+        Time: O(n), Space: O(1)
+*/
+
+class Solution {
+    const int MOD = 1e9 + 7;
+public:
+    int numDecodingsDP(const string& s) {
+        long long n = s.size(), c = 1, p1 = 0, p2 = 0;
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            p2 = p1; p1 = c; c = 0;
+
+            if ( s[i] == '0' ) continue;
+            if ( s[i] == '*' ) {
+                c = ( c + 9 * ( p1 % MOD ) ) % MOD;
+                if ( i + 1 < n ) {
+                    if ( s[i + 1] != '*' ) c = ( c + ( s[i + 1] >= '7' ? 1 : 2 ) * ( p2 % MOD ) ) % MOD;
+                    else c = ( c + 15 * ( p2 % MOD ) ) % MOD;
+                }
+            }
+            else {
+                c = ( c + p1 % MOD ) % MOD;
+                if ( i + 1 < n ) {
+                    int k = -1;
+                    if ( s[i + 1] != '*' ) k = ( s[i] - '0' ) * 10 + s[i + 1] - '0';
+                    if ( 10 <= k && k <= 26 )
+                        c = ( c + ( p2 % MOD ) ) % MOD;
+                    else if ( k == -1 && s[i] == '1' )
+                        c = ( c + 9 * ( p2 % MOD ) ) % MOD;
+                    else if ( k == -1 && s[i] == '2' )
+                        c = ( c + 6 * ( p2 % MOD ) ) % MOD;
+                }
+            }
+        }
+
+        return c;
+    }
+
+    long long numDecodingsRec(const string& s, int i, vector<long long>& memo) { // DFS
+        if ( i > s.size() || s[i] == '0' ) return 0;
+        if ( memo[i] != -1 ) return memo[i];
+
+        long long res = 0;
+
+        if ( s[i] == '*' ) {
+            res = ( res + 9 * numDecodingsRec(s, i + 1, memo) % MOD ) % MOD;
+            if ( i + 1 < s.size() ) {
+                if ( s[i + 1] != '*' ) res = ( res + ( s[i + 1] >= '7' ? 1 : 2 ) * ( numDecodingsRec(s, i + 2, memo) % MOD ) ) % MOD;
+                else res = ( res + 15 * ( numDecodingsRec(s, i + 2, memo) % MOD ) ) % MOD;
+            }
+        }
+        else {
+            res = ( res + numDecodingsRec(s, i + 1, memo) % MOD ) % MOD;
+            if ( i + 1 < s.size() ) {
+                int k = -1;
+                if ( s[i + 1] != '*' ) k = ( s[i] - '0' ) * 10 + s[i + 1] - '0';
+                if ( 10 <= k && k <= 26 )
+                    res = ( res + numDecodingsRec(s, i + 2, memo) % MOD ) % MOD;
+                else if ( k == -1 && s[i] == '1' )
+                    res = ( res + 9 * ( numDecodingsRec(s, i + 2, memo) % MOD ) ) % MOD;
+                else if ( k == -1 && s[i] == '2' )
+                    res = ( res + 6 * ( numDecodingsRec(s, i + 2, memo) % MOD ) ) % MOD;
+            }
+        }
+
+        return memo[i] = res;
+    }
+
+    int numDecodings(const string& s) {
+        // vector<long long> memo(s.size()+1, -1); 
+        // memo[s.size()] = 1;
+        // return numDecodingsMemo(s, 0, memo);
+        return numDecodingsDP(s);
+    }
+};
+
+int main() {
+    string str = "7*9*3*6*3*0*5*4*9*7*3*7*1*8*3*2*0*0*6*";
+    cout << Solution().numDecodings(str) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 72 - Edit Distance
+        Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2.
+        You have the following three operations permitted on a word:
+            Insert a character
+            Delete a character
+            Replace a character
+
+        If the characters don't match just take the minimum of the 3 cases:
+            Insert: (i, j) -> (i, j-1)
+            Delete: (i, j) -> (i-1, j)
+            Replace: (i, j) -> (i-1, j-1)
+
+        Else take the diagonal value: (i, j) -> (i-1, j-1)
+
+        Answer is dp[0][0]
+
+        Time: O(n*m), Space: O(n*m)
+*/
+
+class Solution {
+public:
+    int minDistanceSpace(const string& s, const string& t) {
+        const int m = s.size(), n = t.size();
+
+        vector<int> dp(n + 1, 0), ndp(n + 1, 0);
+        for ( int i = 0; i <= n; i++ ) dp[i] = i; // Base case
+
+        for ( int i = 1; i <= m; i++ ) {
+            ndp[0] = i; // Base case
+            for ( int j = 1; j <= n; j++ ) {
+                if ( s[i - 1] == t[j - 1] ) ndp[j] = dp[j - 1];
+                else ndp[j] = 1 + min(dp[j], min(ndp[j - 1], dp[j - 1]));
+            }
+            dp = ndp;
+        }
+        return dp[n];
+    }
+
+    int minDistance(const string& s, const string& t) {
+        const int m = s.size(), n = t.size();
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        for ( int i = 0; i <= n; i++ ) dp[m][i] = n - i;
+        for ( int i = 0; i <= m; i++ ) dp[i][n] = m - i;
+
+        for ( int i = m - 1; i >= 0; i-- )
+            for ( int j = n - 1; j >= 0; j-- )
+                if ( s[i] == t[j] ) dp[i][j] = dp[i + 1][j + 1];
+                else dp[i][j] = 1 + min(dp[i + 1][j + 1], min(dp[i][j + 1], dp[i + 1][j]));
+
+        return dp[0][0];
+    }
+};
+
+int main() {
+    Solution s;
+    string s1 = "sea", s2 = "eat";
+    cout << s.minDistance(s1, s2) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    LeetCode 91 - Decode Ways
+        Given string s with numbers, convert to letters based on alphabetical order, i.e 1->A, 2->B, ... 26->Z
+        Return the number of ways to decode the string
+
+        DP solution, base case is dp[n]=1 as empty string has 1 way to decode
+        If s[i]=='0', then dp[i]=0 as 0 cannot be decoded
+        Else dp[i]=dp[i+1] as s[i] can be decoded to a letter
+        Then check if two digits can be decoded to a letter, if so, dp[i]+=dp[i+2]
+        Return dp[0] as the number of ways to decode the string
+
+        Alternatively as only two previous states are required, we can use three variables instead of an array (2 for past states, 1 for current state)
+
+        Time: O(n), Space: O(n), Space Optimized: O(1)
+*/
+
+class Solution {
+public:
+    int numDecodingsDP(const string& s) {
+        int dp[103] = { 0 }, n = s.size(); dp[n] = 1;
+        for ( int i = n - 1; i >= 0; i-- ) {
+            if ( s[i] == '0' ) dp[i] = 0;
+            else dp[i] = dp[i + 1];
+
+            int k1 = s[i] - '0', k2 = -1;
+            if ( i + 1 < s.size() ) k2 = k1 * 10 + ( s[i + 1] - '0' );
+            if ( ( k1 > 0 ) && ( k2 > 0 && k2 <= 26 ) ) dp[i] += dp[i + 2];
+        }
+        return dp[0];
+    }
+
+    int memo[101];
+    int numDecodingsRec(const string& s, int i = 0) { // DFS
+        if ( memo[i] != -1 ) return memo[i];
+        if ( s[i] == '0' ) return 0;
+
+        int k1 = s[i] - '0', k2 = -1, res = 0;
+        if ( i + 1 < s.size() ) k2 = k1 * 10 + ( s[i + 1] - '0' );
+        if ( k1 > 0 ) {
+            res += numDecodingsRec(s, i + 1);
+            if ( k2 > 0 && k2 <= 26 ) res += numDecodingsRec(s, i + 2);
+        }
+        return memo[i] = res;
+    }
+
+    int numDecodings(const string& s) {
+        // memset(memo, -1, 101*sizeof(int));
+        // memo[s.size()]=1;
+        return numDecodingsDP(s);
+    }
+};
+
+int main() {
+    Solution s;
+    string str = "226";
+    cout << s.numDecodings(str) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Display LCS
+        Given two strings s1 and s2, find the longest common subsequence between them.
+        If there is no common subsequence, return empty string.
+
+        Use same logic as finding length of LCS, store the resulting dp table.
+
+        Then start from dp[n][m] and go backwards,
+        If s1[i-1]==s2[j-1], then add s1[i-1] to the answer and go to dp[i-1][j-1], i.e (i, j, s) -> (i-1, j-1, s+s1[i-1])
+        Else go to the maximum of dp[i-1][j] and dp[i][j-1], i.e (i, j, s) -> (i-1, j, s) or (i, j-1, s)
+
+        When i==0 or j==0 stop the loop as lcs has been found.
+
+        Time: O(n*m), Space: O(n*m)
+*/
+
+class Solution {
+public:
+    int lcsDP(const string& s1, const string& s2, vector<vector<int>>& dp) {
+        int n = s1.size(), m = s2.size();
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                int ans = 0;
+                if ( s1[i - 1] == s2[j - 1] ) ans = 1 + dp[i - 1][j - 1];
+                else ans = max(dp[i - 1][j], dp[i][j - 1]);
+                dp[i][j] = ans;
+            }
+        }
+        return dp[n][m];
+    }
+
+    string printLCS(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size(); string lcs;
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+        lcs.resize(lcsDP(s1, s2, dp));
+        int i = n, j = m, k = lcs.size() - 1;
+
+        while ( i > 0 && j > 0 ) {
+            if ( s1[i - 1] == s2[j - 1] ) {
+                lcs[k--] = s1[i - 1];
+                i--; j--;
+            }
+            else if ( dp[i - 1][j] > dp[i][j - 1] ) i--;
+            else j--;
+        }
+        return lcs;
+    }
+};
+
+int main() {
+    Solution s;
+    string s1 = "calbde", s2 = "alcde";
+    cout << s.printLCS(s1, s2) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Longest Common Substring
+        Given two strings s1 and s2, find the length of their longest common substring.
+        If there is no common substring, return 0.
+
+        Same logic as LCS, but when s1[i-1]!=s2[j-1], we set dp[i][j]=0 as we are looking for a substring, not a subsequence.
+        i.e We skip over the skipping over the non equal characters part
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+
+*/
+
+class Solution {
+public:
+    int lcSubstringDPSpace(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size(), ans = 0;
+        vector<int> ndp(m + 1, 0), dp(m + 1, 0);
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                ndp[j] = 0;
+                if ( s1[i - 1] == s2[j - 1] ) {
+                    ndp[j] = 1 + dp[j - 1];
+                    ans = max(ans, ndp[j]);
+                }
+            }
+            dp = ndp;
+        }
+        return ans;
+    }
+
+    int lcSubstringDP(const string& s1, const string& s2) {
+        int n = s1.size(), m = s2.size(), ans = 0;
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                dp[i][j] = 0;
+                if ( s1[i - 1] == s2[j - 1] ) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1];
+                    ans = max(ans, dp[i][j]);
+                }
+            }
+        }
+        return ans;
+    }
+
+    int LCSubstring(const string& s1, const string& s2) {
+        // return lcSubstringDP(s1, s2);
+        return lcSubstringDPSpace(s1, s2);
+    }
+};
+
+int main() {
+    Solution s;
+    string s1 = "calbdoe", s2 = "aclbde";
+    cout << s.LCSubstring(s1, s2) << endl;
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+class Solution {
+public:
+    int longestValidParenthesesMemo(int i, int k, const string& s, vector<vector<int>>& memo) {
+        if ( i == s.size() ) return k == 0 ? 0 : -1e9;
+        if ( k < 0 ) return -1e9;
+
+        if ( memo[i][k] != -1 ) return memo[i][k];
+
+        int take = -1e9, notTake = longestValidParenthesesMemo(i + 1, 0, s, memo);
+        int x = k + ( s[i] == ')' ? -1 : 1 );
+        if ( x >= 0 ) {
+            take = 1 + longestValidParenthesesMemo(i + 1, x, s, memo);
+        }
+
+        return memo[i][k] = max(take, notTake);
+    }
+
+    int longestValidParenthesesRec(int i, int k, const string& s) {
+        if ( i == s.size() ) return k == 0 ? 0 : -1e9;
+        if ( k < 0 ) return -1e9;
+
+        int take = -1e9, notTake = longestValidParenthesesRec(i + 1, 0, s);
+        k += s[i] == ')' ? -1 : 1;
+        if ( k >= 0 ) {
+            take = 1 + longestValidParenthesesRec(i + 1, k, s);
+        }
+        else return -1e9;
+
+        return max(take, notTake);
+    }
+
+    int longestValidParentheses(const string& s) {
+        vector<vector<int>> memo(s.size() + 1, vector<int>(s.size() + 1, -1));
+        return longestValidParenthesesRec(0, 0, s);
+    }
+};
+
+int main() {
+    Solution s;
+    cout << s.longestValidParentheses("()(()") << endl;
+}
+#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    LeetCode 1143 - Longest Common Subsequence
+        Given two strings s1 and s2, find the length of their longest common subsequence.
+        If there is no common subsequence, return 0.
+
+        DP[n+1][m+1]
+        DP solution, base case is dp[n][m]=0 as empty string has no common subsequence
+        If s1[i]==s2[j], then we take the character and add 1 to both i and j: (i, j) -> (i+1, j+1)
+        Else we take the maximum of (i+1, j) and (i, j+1): (i, j) -> (i+1, j) or (i, j+1)
+
+        For i=n-1 to 0
+            For j=m-1 to 0
+                If s1[i]==s2[j], dp[i][j] = 1 + dp[i+1][j+1]
+                Else dp[i][j] = max(dp[i+1][j], dp[i][j+1])
+
+        Answer = dp[0][0]
+
+        Alternatively as only two previous states are required, we can use two vectors instead of a 2D array (1 for past states, 1 for current state)
+
+        Also we can go from i=1->n and j=1->m as follows:
+
+        For i=1 to n
+            For j=1 to m
+                If s1[i-1]==s2[j-1], dp[i][j] = 1 + dp[i-1][j-1]
+                Else dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+
+        Time: O(n*m), Space: O(n*m), Space Optimized: O(m)
+*/
+
+class Solution {
+public:
+    int lcsDPSpace( const string& s1, const string& s2 ) {
+        int n = s1.size( ), m = s2.size( );
+        vector<int> dp( m + 1, 0 ), ndp( m + 1, 0 );
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                if ( s1 [ i - 1 ] == s2 [ j - 1 ] ) ndp [ j ] = 1 + dp [ j - 1 ];
+                else ndp [ j ] = max( dp [ j ], ndp [ j - 1 ] );
+            }
+            dp = ndp;
+        }
+        return dp [ m ];
+    }
+
+    int lcsDP( const string& s1, const string& s2 ) {
+        int n = s1.size( ), m = s2.size( );
+        vector<vector<int>> dp( n + 1, vector<int>( m + 1, 0 ) );
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int j = 1; j <= m; j++ ) {
+                int ans = 0;
+                if ( s1 [ i - 1 ] == s2 [ j - 1 ] ) ans = 1 + dp [ i - 1 ][ j - 1 ];
+                else ans = max( dp [ i - 1 ][ j ], dp [ i ][ j - 1 ] );
+                dp [ i ][ j ] = ans;
+            }
+        }
+        return dp [ n ][ m ];
+    }
+
+    int lcsRec( int i, int j, const string& s1, const string& s2, vector<vector<int>>& dp ) {
+        if ( i >= s1.size( ) || j >= s2.size( ) ) return 0;
+        if ( dp [ i ][ j ] != -1 ) return dp [ i ][ j ];
+
+        int ans = 0;
+        if ( s1 [ i ] == s2 [ j ] ) ans = 1 + lcsRec( i + 1, j + 1, s1, s2, dp );
+        else ans = max( lcsRec( i + 1, j, s1, s2, dp ), lcsRec( i, j + 1, s1, s2, dp ) );
+        return dp [ i ][ j ] = ans;
+    }
+
+    int longestCommonSubsequence( const string& s1, const string& s2 ) {
+        // vector<vector<int>> dp(s1.size(), vector<int>(s2.size(), -1));
+        // return lcsRec(0, 0, s1, s2, dp);
+        // return lcsDPSpace(s1, s2);`
+        return lcsDP( s1, s2 );
+    }
+};
+
+int main( ) {
+    Solution s;
+    string s1 = "abcde", s2 = "ace";
+    cout << s.longestCommonSubsequence( s1, s2 ) << endl;
+    return 0;
+}#include<iostream>
+#include<vector>
+#include<algorithm>
+
+using namespace std;
+
+/*
+    Leetcode 120 - Triangle
+        Triangle Slide Down - Minimum cost path
+        Two vectors: One for current row(ndp), and prev row(dp)
+        For each row take min of two adjacent elements from prev row
+        Time: O(n^2), Space: O(n)
+*/
+
+int minimumTotal(vector<vector<int>>& triangle) {
+    int n = triangle.size(), m = triangle.back().size(), l, r;
+    vector<int> dp(m, 0), ndp(m, 0);
+    for ( int i = n - 1; i >= 0; i-- ) {
+        for ( int j = i; j >= 0; j-- )
+            ndp[j] = triangle[i][j] + ( i == n - 1 ? 0 : min(dp[j], dp[j + 1]) );
+        dp = ndp;
+    }
+    return dp[0];
+}
+
+int main() {
+    vector<vector<int>> triangle = { {2},{3,4},{6,5,7},{4,1,8,3} };
+    cout << minimumTotal(triangle) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    LeetCode 62 - Unique Paths
+        Given a grid of size m*n, find the number of unique paths from top left to bottom right
+        Can only move right or down
+
+        Since we can only move right or down, first row and first column can only be reached in 1 way, so dp[i][0]=dp[0][j]=1
+        Then for (i, j) number of ways to reach is dp[i][j] = dp[i-1][j] + dp[i][j-1]
+        But we can optimize space by using a single array of size n+1, as the previous row automatically becomes the current row.
+        Hence dp[j] = dp[j] + dp[j-1], where i=2->m, j=1->n || inclusive. We start from i=2 as we have already filled i=1 with all 1s.
+        Base case is dp[0]=0, as on empty grid we cannot reach anywhere
+
+        Time: O(m*n), Space: O(n)
+*/
+
+class Solution {
+public:
+    int uniquePaths(int m, int n) {
+        vector<int> dp(n + 1, 1); dp[0] = 0;
+        for ( int i = 2; i <= m; i++ )
+            for ( int j = 1; j <= n; j++ )
+                dp[j] += dp[j - 1];
+        return dp[n];
+    }
+};
+
+int main() {
+    Solution s;
+    cout << s.uniquePaths(3, 7) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 63 - Unique Paths II
+        Given a grid of size m*n, find the number of unique paths from top left to bottom right.
+        Can only move right or down. Obstacles are marked as 1. Cannot move to a cell with an obstacle.
+
+        Go through the grid, if grid[i][j]==1, dp[j]=0, else dp[j] = dp[j] + dp[j-1]
+
+        Answer is dp[n]
+
+        Time: O(m*n), Space: O(n)
+
+*/
+
+class Solution {
+public:
+    int uniquePathsWithObstacles(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<int> dp(n + 1, 0); dp[1] = 1;
+        for ( int i = 1; i <= m; i++ )
+            for ( int j = 1; j <= n; j++ ) {
+                if ( !grid[i - 1][j - 1] ) dp[j] += dp[j - 1];
+                else dp[j] = 0;
+            }
+        return dp[n];
+    }
+};
+
+int main() {
+    Solution s;
+    vector<vector<int>> grid = { {0,0,0},{0,1,0},{0,0,0} };
+    cout << s.uniquePathsWithObstacles(grid) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 64 - Minimum Path Sum
+        n x m grid, find min path sum from top left to bottom right
+        At (i, j), can move to (i+1, j) or (i, j+1)
+        DP[m+1] = 1e9.
+
+        Let i=0 to n-1
+            temp[m+1]=0, temp[0]=1e9
+            Let j=0 to m-1
+                If at (0, 0), temp[1]=grid[0][0]
+                Else temp[j+1] = grid[i][j]+min(dp[j+1], temp[j])
+            dp = temp
+
+        Answer = dp[m]
+
+
+        Time Complexity: O(n*m)
+        Space Complexity: O(n*m)
+*/
+
+
+class Solution {
+public:
+    int minPathSum(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        vector<int> dp(m + 1, 1e9);
+        for ( int i = 0; i < n; i++ ) {
+            vector<int> temp(m + 1, 0); temp[0] = 1e9;
+            for ( int j = 0; j < m; j++ ) {
+                if ( i == 0 && j == 0 ) temp[1] = grid[0][0];
+                else temp[j + 1] = grid[i][j] + min(dp[j + 1], temp[j]);
+            }
+            dp = temp;
+        }
+        return dp[m];
+    }
+};#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 741 - Cherry Pickup
+        Go from top left to bottom right, and then bottom right to top left and collect maximum cherries
+        Optimization is to consider the fact that moving one person from top left to bottom right and back is the same as moving 2 people from top left to bottom right
+        Use a 3D memo. As both are moving together, it means r1+c1 = r2+c2, using this we can eliminate the 4D
+        Hence just go through all possible directions, i.e vertical and horizontal: vv, hh, hv, vh and take max of all
+        If going out of bounds or hitting a thorn, return -1e9
+        If one person reaches bottom right, return the value at that cell
+        At every recursion, take cherry = grid[r1][c1]+grid[r2][c2]. To prevent double counting, if both on same cell do cherry = grid[r1][c1]
+        Return max of all 4 directions + cherry
+        Time: O(n^3), Space: O(n^3)
+*/
+
+class Solution {
+private:
+    // r1+c1==r2+c2, hence get 3d map using c2 = r1+c1-r2
+    // int memo2P[50][50][50] = {-1}; // with a bit more changes
+    map<pair<pair<int, int>, int>, int> memo2P;
+    int cherryPickup2ManMemo(vector<vector<int>>& grid, const int n, int r1 = 0, int c1 = 0, int r2 = 0) {
+        if ( memo2P.count({ {r1,c1}, r2 }) ) return memo2P[{{r1, c1}, r2}];
+
+        int c2 = r1 + c1 - r2;
+        if ( r1 >= n || c1 >= n || r2 >= n || c2 >= n || grid[r1][c1] == -1 || grid[r2][c2] == -1 ) return -1e9;
+        if ( r1 == n - 1 && c1 == n - 1 ) return grid[r1][c1];
+
+        int ans = 0;
+        if ( r1 == r2 && c1 == c2 ) ans = grid[r1][c1];
+        else ans = grid[r1][c1] + grid[r2][c2];
+
+        int hh = cherryPickup2ManMemo(grid, n, r1, c1 + 1, r2);
+        int hv = cherryPickup2ManMemo(grid, n, r1, c1 + 1, r2 + 1);
+        int vh = cherryPickup2ManMemo(grid, n, r1 + 1, c1, r2);
+        int vv = cherryPickup2ManMemo(grid, n, r1 + 1, c1, r2 + 1);
+
+        ans += max(max(vv, hh), max(hv, vh));
+        return memo2P[{{r1, c1}, r2}] = ans;
+    }
+
+    int cherryPickup2Man(vector<vector<int>>& grid, const int n, int r1 = 0, int c1 = 0, int r2 = 0, int c2 = 0) {
+        if ( r1 >= n || c1 >= n || r2 >= n || c2 >= n || grid[r1][c1] == -1 || grid[r2][c2] == -1 ) return -1e9;
+        if ( r1 == n - 1 && c1 == n - 1 ) return grid[r1][c1];
+
+        int ans = 0;
+        if ( r1 == r2 && c1 == c2 ) ans = grid[r1][c1];
+        else ans = grid[r1][c1] + grid[r2][c2];
+
+        int hh = cherryPickup2Man(grid, n, r1, c1 + 1, r2, c2 + 1);
+        int hv = cherryPickup2Man(grid, n, r1, c1 + 1, r2 + 1, c2);
+        int vh = cherryPickup2Man(grid, n, r1 + 1, c1, r2, c2 + 1);
+        int vv = cherryPickup2Man(grid, n, r1 + 1, c1, r2 + 1, c2);
+
+        ans += max(max(vv, hh), max(hv, vh));
+        return ans;
+    }
+
+    vector<map<pair<int, int>, int>> memo { {},{} };
+    int cherryPickupRecMemo(vector<vector<int>>& grid, const int n, const int i = 0, const int j = 0, int dir = 1) {
+        if ( n == 1 ) return grid[0][0];
+        if ( memo[dir < 0 ? 0 : 1].count({ i,j }) ) return memo[dir == 1 ? 0 : -1][{i, j}];
+        if ( dir == 1 && i == n - 1 && j == n - 1 ) return cherryPickupRec(grid, n, i, j, -1);
+        if ( dir == -1 && i == 0 && j == 0 ) return 0;
+        if ( i < 0 || j < 0 || i >= n || j >= n || grid[i][j] == -1 ) return -1e9;
+        int q = grid[i][j]; grid[i][j] = 0;
+        int ans = max(cherryPickupRec(grid, n, i + dir, j, dir), cherryPickupRec(grid, n, i, j + dir, dir)) + q;
+        grid[i][j] = q;
+        return memo[dir < 0 ? 0 : 1][{i, j}] = ans;
+    }
+
+    int cherryPickupRec(vector<vector<int>>& grid, const int n, const int i = 0, const int j = 0, int dir = 1) {
+        if ( n == 1 ) return grid[0][0];
+        if ( dir == 1 && i == n - 1 && j == n - 1 ) return cherryPickupRec(grid, n, i, j, -1);
+        if ( dir == -1 && i == 0 && j == 0 ) return 0;
+        if ( i < 0 || j < 0 || i >= n || j >= n || grid[i][j] == -1 ) return -1e9;
+        int q = grid[i][j]; grid[i][j] = 0;
+        int ans = max(cherryPickupRec(grid, n, i + dir, j, dir), cherryPickupRec(grid, n, i, j + dir, dir)) + q;
+        grid[i][j] = q;
+        return ans;
+    }
+
+public:
+    int cherryPickup(vector<vector<int>>& grid) {
+        return max(cherryPickup2ManMemo(grid, grid.size()), 0);
+    }
+};
+
+int main() {
+    vector<vector<int>> grid = { {0,1,-1},{1,0,-1},{1,1,1} };
+    cout << Solution().cherryPickup(grid) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+
+/*
+    Leetcode 931 - Minimum Falling Path Sum
+        Minimum cost path - Square matrix of size n
+        Two vectors: One for current row(ndp), and prev row(dp), size of both = n+2
+        n+2 to ignore boundary conditions. Set first and last to sentinel value
+        For each row(1<=i,j<=n) take min(dp[j-1], dp[j], dp[j+1]) and add to matrix[i][j] and store in ndp[j]
+        Time: O(n^2), Space: O(n)
+*/
+
+int minFallingPathSum(vector<vector<int>>& matrix) {
+    int n = matrix.size();
+    vector<int> dp(n + 2, 0); dp[0] = dp[n + 1] = 1e9;
+    vector<int> ndp(dp);
+    for ( int i = 1; i <= n; i++ ) {
+        for ( int j = 1; j <= n; j++ ) {
+            ndp[j] = matrix[i - 1][j - 1] + min(dp[j - 1], min(dp[j], dp[j + 1]));
+        }
+        dp = ndp;
+    }
+    return *min_element(dp.begin() + 1, dp.end() - 1);
+}
+
+int main() {
+    vector<vector<int>> matrix = { {2,1,3},{6,5,4},{7,8,9} };
+    cout << minFallingPathSum(matrix) << endl;
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+/*
+    LeetCode 576 - Out of Boundary Paths
+        Given a grid of size m*n, and a starting position (sr, sc), find the number of ways to go out of bounds
+        Can only move up, down, left, right
+        Can move at most mx steps
+
+        Use a 3D memo, as we have 3 variables, i, j and mx
+        If out of bounds, return 1
+        If mx==0, return 0
+        If memo[i][j][mx]!=-1, return memo[i][j][mx]
+        Else, ans = 0, and for all 4 directions, ans += findPaths(i+dir[k], j+dir[k+1], m, n, mx-1)
+        Return memo[i][j][mx] = ans
+
+        Time: O(m*n*mx), Space: O(m*n*mx)
+*/
+
+
+#define isValid(i, j, m, n) (i>=0 && i<m && j>=0 && j<n)
+
+constexpr int dir[] = { 0, -1, 0, 1, 0 };
+constexpr int MOD = 1e9 + 7;
+
+class Solution {
+public:
+    int findPathsRec(int i, int j, int m, int n, int mx, vector<vector<vector<int>>>& memo) {
+        if ( !isValid(i, j, m, n) ) return 1;
+
+        if ( memo[i][j][mx] != -1 ) return memo[i][j][mx];
+
+        int ans = 0;
+        for ( int k = 0; k < 4; k++ ) {
+            if ( mx > 0 ) ans = ( ans + findPathsRec(i + dir[k], j + dir[k + 1], m, n, mx - 1, memo) ) % MOD;
+        }
+        return memo[i][j][mx] = ans;
+    }
+
+    int findPaths(int m, int n, int mx, int sr, int sc) {
+        vector<vector<vector<int>>> memo(m + 1, vector<vector<int>>(n + 1, vector<int>(mx + 1, -1)));
+        return findPathsRec(sr, sc, m, n, mx, memo);
+    }
+};
+
+int main() {
+    Solution sol;
+    cout << sol.findPaths(2, 2, 2, 0, 0) << endl;
+    cout << sol.findPaths(1, 3, 3, 0, 1) << endl;
+
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    LeetCode 1463 - Cherry Pickup II
+        2 Robots, start from top left and top right in a maze of size n x m. Collect maximum cherries. No obstacles
+        Robots can move to the next row in 3 ways: left, right, or stay in the same column
+        Use a 3D memo. As both are moving in the same row, it means r1==r2, using this we can eliminate the 4D
+        Hence just go through all possible 9 combos: r+1, c+{-1, 0, 1} and take max of all
+        If it goes out of bounds, return -1e9
+        If on last row, if both on same cell, return grid[r][c1], else return grid[r][c1]+grid[r][c2]
+        At every recursion, take cherry = grid[r][c1]+grid[r][c2]. To prevent double counting, if both on same cell do cherry = grid[r][c1]
+        Return max of all 9 combos + cherry
+        Time: O(n^3), Space: O(n^3)
+
+    Tabulation:
+        3D -> 2D, using prev, current. Let dp, ndp of size mxm
+        Base case is last row, copy that to dp.
+        Since last row is already filled, start from r=n-2
+        Let r=n-1->0, c1=0->m-1, c2=0->m-1 || inclusive
+        At every cell, take cherry = grid[r][c1]+grid[r][c2]. To prevent double counting, if both on same cell do cherry = grid[r][c1]
+
+        Let i=-1->1, j=-1->1 || inclusive
+        If c1, c2 are in bounds, take mx = max(mx, dp[c1+i][c2+j])
+
+        Let ndp[c1][c2] = mx+cherry, which is the max of all 9 combos + cherry
+
+        Then dp = ndp, this is done inside c2 loop
+
+        Return dp[0][m-1] as ans is stored here and not in dp[0][0]
+
+*/
+
+class Solution {
+public:
+    int cherryPickup2ManMemo(const vector<vector<int>>& grid, const int m, int r, int c1, int c2, int memo2P[71][71][71]) {
+        if ( c1 < 0 || c2 < 0 || c1 >= m || c2 >= m ) return -1e8;
+        if ( r == grid.size() - 1 ) {
+            if ( c1 == c2 ) return grid[r][c1];
+            else return grid[r][c1] + grid[r][c2];
+        }
+
+        if ( memo2P[r][c1][c2] != -1 ) return memo2P[r][c1][c2];
+
+        int ans = 0, x = -1e8;
+        if ( c1 == c2 ) ans = grid[r][c1];
+        else ans = grid[r][c1] + grid[r][c2];
+
+        for ( int i = -1; i < 2; i++ )
+            for ( int j = -1; j < 2; j++ )
+                x = max(x, cherryPickup2ManMemo(grid, m, r + 1, c1 + i, c2 + j, memo2P));
+
+        ans += x;
+        return memo2P[r][c1][c2] = ans;
+    }
+
+    int cherryPickup(vector<vector<int>>& grid) {
+        const int n = grid.size(), m = grid[0].size();
+
+        // int memo2P[71][71][71];
+        // memset(memo2P, -1, 71*71*71*sizeof(int));
+        // return cherryPickup2ManMemo(grid, m, 0, 0, m-1, memo2P);
+
+        vector<vector<int>>  dp(m, vector<int>(m, 0));
+        vector<vector<int>> ndp(m, vector<int>(m, 0));
+        for ( int i = 0; i < m; i++ ) {
+            for ( int j = 0; j < m; j++ ) {
+                if ( i == j ) dp[i][j] = grid[n - 1][j];
+                else dp[i][j] = grid[n - 1][i] + grid[n - 1][j];
+            }
+        }
+
+        for ( int r = n - 2; r >= 0; r-- ) {
+            for ( int c1 = 0; c1 < m; c1++ ) {
+                for ( int c2 = 0; c2 < m; c2++ ) {
+                    int mx = -1e9, ans;
+                    if ( c1 == c2 ) ans = grid[r][c1];
+                    else ans = grid[r][c1] + grid[r][c2];
+
+                    for ( int i = -1; i < 2; i++ )
+                        for ( int j = -1; j < 2; j++ )
+                            if ( c1 + i >= 0 && c2 + j >= 0 && c1 + i < m && c2 + j < m )
+                                mx = max(mx, dp[c1 + i][c2 + j]);
+
+                    ndp[c1][c2] = mx + ans;
+                }
+            }
+            dp = ndp;
+        }
+        return dp[0][m - 1];
+    }
+};
+
+int main() {
+    vector<vector<int>> grid = { {0,1,-1},{1,0,-1},{1,1,1} };
+    cout << Solution().cherryPickup(grid) << endl;
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+class Solution {
+public:
+    int calculateMinimumHPDPSpace(const vector<vector<int>>& dungeon) {
+        int m = dungeon.size(), n = dungeon[0].size();
+        vector<int> dp(n + 1, 1e9);
+
+        dp[n - 1] = 1;
+
+        for ( int i = m - 1; i >= 0; i-- ) {
+            vector<int> ndp(n + 1, 1e9);
+            if ( i == m - 1 ) ndp[n] = 1;
+
+            for ( int j = n - 1; j >= 0; j-- ) {
+                ndp[j] = max(min(ndp[j + 1], dp[j]) - dungeon[i][j], 1);
+            }
+            dp = move(ndp);
+        }
+
+        return dp[0];
+    }
+
+    int calculateMinimumHPDP(const vector<vector<int>>& dungeon) {
+        int m = dungeon.size(), n = dungeon[0].size();
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 1e9));
+        dp[m][n - 1] = dp[m - 1][n] = 1;
+
+        for ( int i = m - 1; i >= 0; i-- ) {
+            for ( int j = n - 1; j >= 0; j-- ) {
+                dp[i][j] = max(min(dp[i][j + 1], dp[i + 1][j]) - dungeon[i][j], 1);
+            }
+        }
+        return dp[0][0];
+    }
+
+#define isValid(i, j, m, n) (i >= 0 && i < m && j >= 0 && j < n)
+    int calculateMinimumHPRec(int i, int j, const vector<vector<int>>& dungeon,
+        vector<vector<int>>& dp) {
+        int m = dungeon.size(), n = dungeon[0].size();
+        if ( ( i == m - 1 && j == n ) || ( i == m && j == n - 1 ) ) return 1;
+        if ( !isValid(i, j, m, n) ) return 1e9;
+        if ( dp[i][j] != -1 ) return dp[i][j];
+
+        int right = calculateMinimumHPRec(i, j + 1, dungeon, dp),
+            down = calculateMinimumHPRec(i + 1, j, dungeon, dp);
+        return dp[i][j] = max(min(down, right) - dungeon[i][j], 1);
+    }
+
+    int calculateMinimumHP(vector<vector<int>>& dungeon) {
+        // int m = dungeon.size(), n = dungeon[0].size();
+        // vector<vector<int>> dp(m + 1, vector<int>(n + 1, -1));
+        // return calculateMinimumHPRec(0, 0, dungeon, dp);
+        return calculateMinimumHPDPSpace(dungeon);
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<vector<int>> dungeon = { {-2, -3, 3}, {-5, -10, 1}, {10, 30, -5} };
+    cout << solution.calculateMinimumHP(dungeon) << endl;
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+class Solution {
+    const int MOD = 1e9 + 7;
+public:
+    int numberOfPathsDP(const int k, const vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<vector<int>>> dp(m, vector<vector<int>>(n, vector<int>(k, 0)));
+        dp[0][0][grid[0][0] % k] = 1;
+
+        for ( int i = 0; i < m; i++ ) {
+            for ( int j = 0; j < n; j++ ) {
+                if ( i == 0 && j == 0 ) continue;
+                for ( int sum = 0; sum < k; sum++ ) {
+                    int rem = ( sum + grid[i][j] ) % k;
+                    if ( i ) dp[i][j][rem] += dp[i - 1][j][sum];
+                    if ( j ) dp[i][j][rem] += dp[i][j - 1][sum];
+                    dp[i][j][rem] %= MOD;
+                }
+            }
+        }
+        return dp[m - 1][n - 1][0];
+    }
+
+    int numberOfPathsRec(int i, int j, int sum, const int k, const vector<vector<int>>& grid,
+        vector<vector<vector<int>>>& dp) {
+
+        int m = grid.size(), n = grid[0].size();
+        if ( i >= m || j >= n ) return 0;
+
+        int rem = ( sum + grid[i][j] ) % k;
+        if ( i == m - 1 && j == n - 1 ) return rem == 0;
+
+        if ( dp[i][j][sum % k] != -1 ) return dp[i][j][sum % k];
+
+        int r = numberOfPathsRec(i, j + 1, rem, k, grid, dp),
+            d = numberOfPathsRec(i + 1, j, rem, k, grid, dp);
+        return dp[i][j][sum % k] = ( r % MOD + d % MOD ) % MOD;
+    }
+
+    int numberOfPaths(vector<vector<int>>& grid, int k) {
+        // int m = grid.size(), n = grid[0].size();
+        // vector<vector<vector<int>>> dp(m + 1, vector<vector<int>>(n + 1, vector<int>(k + 1, -1)));
+        // return numberOfPathsRec(0, 0, 0, k, grid, dp);
+        return numberOfPathsDP(k, grid);
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<vector<int>> grid = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+    int k = 5;
+    cout << sol.numberOfPaths(grid, k) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 122 - Best Time to Buy and Sell Stock II
+        Array of size n with n prices. Find the maximum profit that can be made by buying and selling stocks.
+        Buy and sell as many times as you want, but if bought then must be sold before buying again.
+
+        We just check if we have already bought, in which case we take the max of the two cases:
+            Sell: (i, 1) -> (i+1, 0), i.e sell the stock and move to the next day
+            Skip: (i, 0) -> (i+1, 0), i.e skip the current day
+        If we have not bought, then we take the max of the two cases:
+            Buy: (i, 0) -> (i+1, 1), i.e buy the stock and move to the next day
+            Skip: (i, 0) -> (i+1, 0), i.e skip the current day
+
+        The max of both cases is the answer
+
+        In DP, we use a 2*n array to store the two states, i.e DP[b][i] where b=bought or not, i = price index
+        The base case is DP[1][n] = 0, i.e if we have bought and we are at the last day, then we cannot sell
+        The answer is DP[1][0], i.e we are the first day and we can buy
+
+        For i=n-1->0
+            DP[1][i] = max(prices[i] + DP[0][i+1], DP[1][i+1])
+            DP[0][i] = max(-prices[i] + DP[1][i+1], DP[0][i+1])
+
+        Time: O(n), Space: O(n)
+
+        Space Optimized:
+            This can be optimized into 4 variables, i.e a=DP[0][i], b=DP[1][i], x=DP[0][i+1], y=DP[1][i+1]
+            For i=n-1->0
+                a = max(prices[i] + y, x)
+                b = max(-prices[i] + x, y)
+                x=a, y=b
+
+            Then the answer is y
+
+            Time: O(n), Space: O(1)
+*/
+
+class Solution {
+public:
+    int maxProfitDPSpace(const vector<int>& prices, const int n) {
+        int a, b, x = 0, y = 0;
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            a = max(prices[i] + y, x);
+            b = max(-prices[i] + x, y);
+            x = a, y = b;
+        }
+        return y;
+    }
+
+    int maxProfitDP(const vector<int>& prices, const int n) {
+        vector<vector<int>> dp(2, vector<int>(n + 1, 0));
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            dp[0][i] = max(prices[i] + dp[1][i + 1], dp[0][i + 1]);
+            dp[1][i] = max(-prices[i] + dp[0][i + 1], dp[1][i + 1]);
+        }
+        return dp[1][0];
+    }
+
+    int maxProfitRec(int i, bool b, const vector<int>& prices, vector<vector<int>>& dp) {
+        if ( i == prices.size() ) return 0;
+
+        if ( dp[b][i] != -1 ) return dp[b][i];
+
+        int profit = 0;
+        if ( b ) profit = max(-prices[i] + maxProfitRec(i + 1, 0, prices, dp), maxProfitRec(i + 1, 1, prices, dp));
+        else profit = max(prices[i] + maxProfitRec(i + 1, 1, prices, dp), maxProfitRec(i + 1, 0, prices, dp));
+
+        return dp[b][i] = profit;
+    }
+
+    int maxProfit(vector<int>& prices) {
+        // vector<vector<int>> dp(2, vector<int>(prices.size()+1, -1));
+        // return maxProfitRec(0, 1, prices, dp);
+        return maxProfitDPSpace(prices, prices.size());
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> prices = { 7,1,5,3,6,4 };
+    cout << s.maxProfit(prices) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 123 - Best Time to Buy and Sell Stock III
+        Array of size n with n prices. Find the maximum profit that can be made by buying and selling stocks.
+        Buy and sell at most twice.
+
+        We can use the same approach as 122, but we need to keep track of the number of transactions.
+        We can use a 2*k*n array to store the two states, i.e DP[b][k][i] where b=bought or not, k=number of transactions, i = price index
+        Here k=2, so DP[2][3][n] = {0}
+
+        The base case is DP[1][k][n] = 0, i.e if we have bought and we are at the last day, then we cannot sell
+        The answer is DP[1][2][0], i.e we are the first day and we can buy
+
+        For i=n-1->0
+            For k=0->2
+                DP[1][k][i] = max(-prices[i] + (k>0?DP[0][k-1][i+1]:0), DP[1][k][i+1])
+                DP[0][k][i] = max(prices[i] + DP[1][k][i+1], DP[0][k][i+1])
+
+        Time: O(n), Space: O(n)
+
+        Space Optimized:
+            This can be optimized into 2*3 arrays, i.e 1 for DP[0][k][i], and 1 for DP[1][k][i]
+            For i=n-1->0
+                For k=0->2
+                    NDP[1][k] = max(-prices[i] + (k>0?DP[0][k-1]:0), DP[1][k])
+                    NDP[0][k] = max(prices[i] + DP[1][k], DP[0][k])
+                DP = NDP
+
+            Then the answer is DP[1][2]
+
+            Time: O(n), Space: O(1) as we are using a fixed size array 2*3
+
+*/
+
+class Solution {
+public:
+    int maxProfitDPSpace(const vector<int>& prices, const int n) {
+        vector<vector<int>> dp(2, vector<int>(2 + 1, 0));
+        vector<vector<int>> ndp(2, vector<int>(2 + 1, 0));
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int k = 0; k <= 2; k++ ) {
+                ndp[1][k] = max(-prices[i] + ( k > 0 ? dp[0][k - 1] : 0 ), dp[1][k]);
+                ndp[0][k] = max(dp[0][k], prices[i] + dp[1][k]);
+            }
+            dp = ndp;
+        }
+        return dp[1][2];
+    }
+
+    int maxProfitDP(const vector<int>& prices, const int n) {
+        vector<vector<vector<int>>> dp(2, vector<vector<int>>(2 + 1, vector<int>(n + 1, 0)));
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int k = 0; k <= 2; k++ ) {
+                dp[1][k][i] = max(-prices[i] + ( k > 0 ? dp[0][k - 1][i + 1] : 0 ), dp[1][k][i + 1]);
+                dp[0][k][i] = max(dp[0][k][i + 1], prices[i] + dp[1][k][i + 1]);
+            }
+        }
+        return dp[1][2][0];
+    }
+
+    int maxProfitRec(int i, bool b, int k, const vector<int>& prices, vector<vector<vector<int>>>& dp) {
+        if ( i == prices.size() ) return 0;
+
+        if ( dp[b][k][i] != -1 ) return dp[b][k][i];
+
+        int trans = -1e9, skip = -1e9;
+        if ( b ) {
+            if ( k > 0 ) trans = -prices[i] + maxProfitRec(i + 1, 0, k - 1, prices, dp);
+            skip = maxProfitRec(i + 1, 1, k, prices, dp);
+        }
+        else {
+            trans = prices[i] + maxProfitRec(i + 1, 1, k, prices, dp);
+            skip = maxProfitRec(i + 1, 0, k, prices, dp);
+        }
+
+        return dp[b][k][i] = max(trans, skip);
+    }
+
+    int maxProfit(vector<int>& prices) {
+        // vector<vector<vector<int>>> dp(2, vector<vector<int>>(3, vector<int>(prices.size()+1, -1)));
+        // return maxProfitRec(0, 1, 2, prices, dp);
+        return maxProfitDPSpace(prices, prices.size());
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<int> prices = { 3,3,5,0,0,3,1,4 };
+    cout << sol.maxProfit(prices) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 188 - Best Time to Buy and Sell Stock IV
+        Array of size n with n prices. Find the maximum profit that can be made by buying and selling stocks.
+        Buy and sell at most k times.
+
+        Same as LC 123, just replace 2 with K
+*/
+
+class Solution {
+public:
+    int maxProfitDPSpace(const vector<int>& prices, const int n, const int K) {
+        vector<vector<int>> dp(2, vector<int>(K + 1, 0));
+        vector<vector<int>> ndp(2, vector<int>(K + 1, 0));
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int k = 0; k <= K; k++ ) {
+                ndp[1][k] = max(-prices[i] + ( k > 0 ? dp[0][k - 1] : 0 ), dp[1][k]);
+                ndp[0][k] = max(dp[0][k], prices[i] + dp[1][k]);
+            }
+            dp = ndp;
+        }
+        return dp[1][K];
+    }
+
+    int maxProfitDP(const vector<int>& prices, const int n, const int K) {
+        vector<vector<vector<int>>> dp(2, vector<vector<int>>(K + 1, vector<int>(n + 1, 0)));
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int k = 0; k <= K; k++ ) {
+                dp[1][k][i] = max(-prices[i] + ( k > 0 ? dp[0][k - 1][i + 1] : 0 ), dp[1][k][i + 1]);
+                dp[0][k][i] = max(dp[0][k][i + 1], prices[i] + dp[1][k][i + 1]);
+            }
+        }
+        return dp[1][K][0];
+    }
+
+    int maxProfitRec(int i, bool b, int k, const vector<int>& prices, vector<vector<vector<int>>>& dp) {
+        if ( i == prices.size() ) return 0;
+
+        if ( dp[b][k][i] != -1 ) return dp[b][k][i];
+
+        int trans = -1e9, skip = -1e9;
+        if ( b ) {
+            if ( k > 0 ) trans = -prices[i] + maxProfitRec(i + 1, 0, k - 1, prices, dp);
+            skip = maxProfitRec(i + 1, 1, k, prices, dp);
+        }
+        else {
+            trans = prices[i] + maxProfitRec(i + 1, 1, k, prices, dp);
+            skip = maxProfitRec(i + 1, 0, k, prices, dp);
+        }
+
+        return dp[b][k][i] = max(trans, skip);
+    }
+
+    int maxProfit(int k, vector<int>& prices) {
+        // vector<vector<vector<int>>> dp(2, vector<vector<int>>(k+1, vector<int>(prices.size()+1, -1)));
+        // return maxProfitRec(0, 1, k, prices, dp);
+        return maxProfitDPSpace(prices, prices.size(), k);
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<int> prices = { 3,2,6,5,0,3 };
+    cout << sol.maxProfit(2, prices) << endl;
+    return 0;
+}#include <iostream>
+#include <vector>
+#include <unordered_map>
+
+using namespace std;
+
+/*
+    Leecode 198. House Robber
+        Maximum Non adjacent sum
+        Time Complexity: O(n)
+        Space Complexity: O(1)
+*/
+
+unordered_map<int, int> memo;
+int robMemo(const vector<int>& nums, const int i = 0) {
+    if ( i >= nums.size() ) return 0;
+    if ( memo.count(i) ) return memo[i];
+    return memo[i] = max(nums[i] + robMemo(nums, i + 2), robMemo(nums, i + 1));
+}
+
+int robDP(vector<int>& nums) {
+    int n = nums.size();
+    vector<int> dp(n + 2, 0);
+    for ( int i = n - 1; i >= 0; i-- )
+        dp[i] = max(dp[i + 1], dp[i + 2] + nums[i]);
+    return dp[0];
+}
+
+int rob(vector<int>& nums) {
+    int n = nums.size(), a = 0, b = 0, c;
+    for ( int i = n - 1; i >= 0; i-- ) {
+        c = max(a, b + nums[i]);
+        b = a; a = c;
+    }
+    return a;
+}
+
+int main() {
+    vector<int> nums = { 1,2,3,1 };
+    cout << rob(nums) << endl;
+    return 0;
+}#include<iostream>
+#include<vector>
+
+using namespace std;
+
+/*
+    Leecode 213. House Robber II
+        Maximum Non adjacent sum on cyclic array
+        Time Complexity: O(n)
+        Space Complexity: O(1)
+*/
+
+
+int rob(const vector<int>& nums) {
+    int n = nums.size(), a = 0, b = 0, c, d;
+    if ( n == 1 ) return nums[0];
+    for ( int i = n - 1; i >= 1; i-- ) {
+        c = max(a, b + nums[i]);
+        b = a; a = c;
+    }
+    d = a; b = 0; a = 0;
+    for ( int i = n - 2; i >= 0; i-- ) {
+        c = max(a, b + nums[i]);
+        b = a; a = c;
+    }
+    return max(a, d);
+}
+
+int main() {
+    vector<int> nums = { 1,2,3,1 };
+    cout << rob(nums) << endl;
+    return 0;
+}
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 309 - Best Time to Buy and Sell Stock with Cooldown
+        Same as LC 122, but just change this line during sale:
+            prices[i] + maxProfitRec(i+1, 1, prices, dp)
+        To:
+            prices[i] + maxProfitRec(i+2, 1, prices, dp)
+        i.e change (i+1) -> (i+2) since cd of 1 day. More generally if cd is k days, then change (i+1) -> (i+k+1)
+
+        Time: O(n), Space: O(n), Space Optimized: O(1)
+
+        Not going to implement DP here as it is the same as LC 122
+*/
+
+class Solution {
+public:
+    int maxProfitRec(int i, bool b, const vector<int>& prices, vector<vector<int>>& dp) {
+        if ( i >= prices.size() ) return 0;
+
+        if ( dp[b][i] != -1 ) return dp[b][i];
+
+        int profit = 0;
+        if ( b ) profit = max(-prices[i] + maxProfitRec(i + 1, 0, prices, dp), maxProfitRec(i + 1, 1, prices, dp));
+        else profit = max(prices[i] + maxProfitRec(i + 2, 1, prices, dp), maxProfitRec(i + 1, 0, prices, dp));
+
+        return dp[b][i] = profit;
+    }
+
+    int maxProfit(vector<int>& prices) {
+        vector<vector<int>> dp(2, vector<int>(prices.size() + 1, -1));
+        return maxProfitRec(0, 1, prices, dp);
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<int> prices = { 1,2,3,0,2 };
+    cout << sol.maxProfit(prices) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 714 - Best Time to Buy and Sell Stock with Transaction Fee
+        Same as LC 122, but just change this line during sale:
+            prices[i] + maxProfitRec(i+1, 1, prices, dp)
+        To:
+            prices[i] - fee + maxProfitRec(i+1, 1, prices, dp, fee)
+
+        Essentially a fee is charged for every sale, so just substract that from the profit when taking max during sale.
+        Also add in fee into the function call.
+
+        Time: O(n), Space: O(n), Space Optimized: O(1)
+
+        Not going to implement DP here as it is the same as LC 122
+*/
+
+class Solution {
+public:
+    int maxProfitRec(int i, bool b, const vector<int>& prices, vector<vector<int>>& dp, const int fee) {
+        if ( i == prices.size() ) return 0;
+
+        if ( dp[b][i] != -1 ) return dp[b][i];
+
+        int profit = 0;
+        if ( b ) profit = max(
+            -prices[i] + maxProfitRec(i + 1, 0, prices, dp, fee),
+            maxProfitRec(i + 1, 1, prices, dp, fee)
+        );
+        else profit = max(
+            prices[i] - fee + maxProfitRec(i + 1, 1, prices, dp, fee),
+            maxProfitRec(i + 1, 0, prices, dp, fee)
+        );
+
+        return dp[b][i] = profit;
+    }
+
+    int maxProfit(vector<int>& prices, int fee) {
+        vector<vector<int>> dp(2, vector<int>(prices.size() + 1, -1));
+        return maxProfitRec(0, 1, prices, dp, fee);
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<int> prices = { 1,3,2,8,4,9 };
+    int fee = 2;
+    cout << sol.maxProfit(prices, fee) << endl;
+    return 0;
+}
+#include <bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 746. Min Cost Climbing Stairs
+        Array of costs to climb stairs. Can climb 1 or 2 steps. Find min cost to reach top
+        DP[n+2], n+2 to ignore boundary conditions.
+        dp[i] = min(dp[i+1], dp[i+2])+cost[i]
+        Answer = min(dp[0], dp[1])
+
+        Time Complexity: O(n)
+        Space Complexity: O(n)
+*/
+
+int minCostClimbingStairs(vector<int>& cost) {
+    int n = cost.size();
+    vector<int> dp(n + 2, 0);
+    for ( int i = n - 1; i >= 0; i-- )
+        dp[i] = min(dp[i + 1], dp[i + 2]) + cost[i];
+
+    return min(dp[0], dp[1]);
+}
+
+int main() {
+    vector<vector<int>> arr = {
+        {10, 15, 20},
+        {1, 100, 1, 1, 1, 100, 1, 1, 100, 1},
+        {0, 0, 0, 1}
+    };
+    for ( auto& v : arr ) {
+        cout << "Min cost to climb stairs: " << minCostClimbingStairs(v) << endl;
+    }
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+class Solution {
+public:
+    bool jumpRec(int i, vector<int>& nums, vector<int>& memo) {
+        if ( i < 0 || i >= nums.size() ) return false;
+        if ( nums[i] == 0 ) return true;
+
+        if ( memo[i] != -1 ) return memo[i];
+
+        int a = false, b = false;
+        if ( i + nums[i] < nums.size() ) a = jumpRec(i + nums[i], nums, memo);
+        if ( i - nums[i] >= 0 ) b = jumpRec(i - nums[i], nums, memo);
+
+        return memo[i] = a || b;
+    }
+
+    bool canReach(vector<int>& arr, int start) {
+        vector<int> memo(5e4 + 2, -1);
+        return jumpRec(start, arr, memo);
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> arr = { 4,2,3,0,3,1,2 };
+    cout << s.canReach(arr, 2) << endl;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 1235 - Maximum Profit in Job Scheduling
+        You are given n jobs. The ith job starts at start[i] and ends at end[i] with profit[i].
+        You cannot take overlapping jobs. Return the maximum profit you can take such that
+            there are no overlapping jobs.
+
+        Example 1:
+            Input: start = [1,2,3,3], end = [3,4,5,6], profit = [50,10,40,70]
+            Output: 120
+            Explanation: The subset chosen is the first and fourth job.
+            Time range [1-3]+[3-6] , we get profit of 120 = 50 + 70.
+
+        We basically sort the arrays based on start time, as just like
+            how every 60s in Africa a minute passes, time goes forward.
+
+        So after that we have two choices for every job, either take it or not.
+        If we are not taking it, we just move on to the next job.
+        If we are taking it, we take the profit of this job and recursively call
+            the function for the next job that doesn't overlap with this one.
+
+        We can find the next job that doesn't overlap with the i-th job by using binary search,
+            by doing lowerbound on starting from i+1 to the end of the array for the end value on start value.
+
+        Base case is when we reach the end of the array, we return 0.
+
+        DP Solution:
+
+            DP[n] = {0}
+            for i=n-1 to i=0:
+                DP[i] = max(DP[i+1], profit[i]+DP[lb(i+1, end[i])])
+
+            Answer is DP[0]
+
+        Time complexity: O(nlogn), Space complexity: O(n)
+*/
+
+class Solution {
+public:
+    int lb(int start, int end, const vector<vector<int>>& times) {
+        int l = start, r = times.size() - 1, mid;
+        while ( l <= r ) {
+            mid = l + ( r - l ) / 2;
+            if ( end <= times[mid][0] ) r = mid - 1;
+            else l = mid + 1;
+        }
+        return l;
+    }
+
+    int jobSchedulingDP(const vector<vector<int>>& times) {
+        vector<int> dp(times.size() + 1, 0);
+        for ( int i = times.size() - 1; i >= 0; i-- )
+            dp[i] = max(dp[i + 1], times[i][2] + dp[lb(i + 1, times[i][1], times)]);
+        return dp[0];
+    }
+
+    int jobSchedulingRec(int i, const vector<vector<int>>& times,
+        unordered_map<int, int>& dp) {
+        if ( i >= times.size() ) return 0;
+        if ( dp.count(i) ) return dp[i];
+
+        int notTake = jobSchedulingRec(i + 1, times, dp), idx = lb(i + 1, times[i][1], times);
+        int take = times[i][2] + jobSchedulingRec(idx, times, dp);
+        return dp[i] = max(take, notTake);
+    }
+
+    int jobScheduling(vector<int>& st, vector<int>& et, vector<int>& p) {
+        vector<vector<int>> times;
+        for ( int i = 0; i < st.size(); i++ )
+            times.push_back({ st[i], et[i], p[i] });
+
+        sort(times.begin(), times.end(), [](auto& a, auto& b) {
+            return ( a[0] < b[0] ) || ( a[0] == b[0] && a[1] < b[1] ) || ( a[0] == b[0] && a[1] == b[1] && a[2] > b[2] );
+            });
+
+            // unordered_map<int, int> dp;
+            // return jobSchedulingRec(0, times, dp);
+        return jobSchedulingDP(times);
+    }
+};
+
+int main() {
+    Solution s;
+    vector<int> st, et, p;
+    st = { 1,2,3,3 }, et = { 3,4,5,6 }, p = { 50,10,40,70 };
+    cout << s.jobScheduling(st, et, p) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    LeetCode: 1277. Count Square Submatrices with All Ones
+        Given a 2d array of size mxn, find the number of square submatrices with all ones.
+
+        Logic is that, each single element is a square matrix of size 1x1, so we can count them(assuming value is 1 in that cell).
+        Now this will be the case for the first row and first column, so they will be essentially copied as it is.
+
+        Now by definition a square needs equal sides, and as we have already formed the square of size 1x1, we will now check for 2x2.
+        Now, its already the base case that if a cell is 1, it forms a square of 1x1, so it should increase the count there.
+        But, it also means that the number of squares which can be formed with that cell acting as its bottom right corner is 1+min(top, left, diagonally top left).
+        i.e for (i, j) and arr[i][j] = 1, the number of squares which can be formed with (i, j) as bottom right corner is
+            1+min(arr[i-1][j], arr[i][j-1], arr[i-1][j-1]).
+
+        Doing this for all cells, we will get the matrix where a single cell at (i, j) will have the number of squares which can be formed with (i, j) as bottom right corner.
+        Hence, we can just add all the elements of the matrix to get the answer.
+
+        Time: O(m*n), Space: O(m*n)
+
+        Note that we can just reuse the given input matrix to store the number of squares which can be formed with (i, j) as bottom right corner.
+        As it already satisfies the base cases of first row and first column being the same as input(as it itself is the input), we will start from (1, 1) and not (0, 0).
+
+        This reduces Auxiliary space to O(1).
+*/
+
+
+class Solution {
+public:
+    int countSquares(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size();
+        vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+        for ( int i = 1; i <= m; i++ ) {
+            for ( int j = 1; j <= n; j++ ) {
+                if ( matrix[i - 1][j - 1] ) dp[i][j] = min(dp[i - 1][j - 1], min(dp[i - 1][j], dp[i][j - 1])) + 1;
+                else dp[i][j] = 0;
+            }
+        }
+        return accumulate(dp.begin(), dp.end(), 0, [](const int a, const vector<int>& v) {
+            return a + accumulate(v.begin(), v.end(), 0);
+            });
+    }
+};
+
+int main() {
+    Solution s;
+    vector<vector<int>> matrix { {0,1,1,1},{1,1,1,1},{0,1,1,1} };
+    cout << s.countSquares(matrix) << endl;
+    return 0;
+}#include<vector>
+#include<utility>
+#include<iostream>
+#include<climits>
+#include<map>
+#include<assert.h>
+
+using namespace std;
+
+// Paint houses - Leetcode 256
+// N houses, 3 colors, paint each house with a color such that no two adjacent houses have same color with min cost
+// Make DP[5]. Set DP[0] and DP[4] to INT_MAX
+// New array nDP[5] = INT_MAX. nDP[i]=min(DP[i-1], DP[i], DP[i+1])+cost[i-1]
+// Copy nDP to DP. In the end, return min(DP)
+// Time: O(n), Space: O(1)
+
+int minCost(const vector<vector<int>>& arr) {
+    int n = arr.size();
+    vector<int> dp(5, 0); dp[0] = dp[4] = INT_MAX;
+    for ( auto& v : arr ) {
+        vector<int> nDP(5, INT_MAX);
+        for ( int i = 1; i <= 3; i++ )
+            nDP[i] = v[i - 1] + min(dp[i - 1], min(dp[i], dp[i + 1]));
+        dp = nDP;
+    }
+    int mn = INT_MAX;
+    for ( auto& c : dp ) mn = min(mn, c);
+    return mn;
+}
+
+int main() {
+    // Paint houses - Leetcode 256
+    map<vector<vector<int>>, int> arr = {
+        {{{17,2,17},{16,16,5},{14,3,19}}, 10},
+        {{{7,6,2}}, 2},
+        {{{7,6,2},{1,2,3}}, 4}
+    };
+    for ( auto& [v, ans] : arr ) {
+        int res = minCost(v);
+        cout << "Min cost to paint houses: " << res << endl;
+        assert(res == ans);
+    }
+    return 0;
+}
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    1155. Number of Dice Rolls With Target Sum
+        n dice, k faces, return ways to get target sum
+
+        DP[n+1][target+1]
+        Base Case is DP[0][0] = 1 as n==0 and target==0 means we have 1 way to get target sum
+        For each dice, we will go through all possible targets. Each face also has k possible values, meaning a sum of 1 to k
+        So, for each dice, we will go through all possible faces and all possible targets
+
+        For i=1 to n
+            For t=1 to target
+                For x=1 to k
+                    if t>=x
+                        DP[i][t] += DP[i-1][t-x]
+
+        We can eliminate the if condition by starting the loop from x=t to k
+
+        For i=1 to n
+            For t=1 to target
+                For x=t to k
+                    DP[i][t] += DP[i-1][t-x]
+
+        As we are using i and i-1, we can instead use two 1D arrays to store the values of dp[i] and dp[i-1]
+        This will reduce the space complexity from O(n*target) to O(target)
+
+        For i=1 to n
+            For t=1 to target
+                For x=t to k
+                    ndp[t] += dp[t-x]
+            dp = ndp
+
+        Time: O(n*target*k), Space: O(target)
+*/
+
+class Solution {
+    const int MOD = 1e9 + 7;
+public:
+    int numRollsToTargetDPSpace(const int n, const int k, const int target) {
+        // vector<int> dp(target+1, 0), ndp(target+1, 0);
+        int dp[1001] = { 0 }, ndp[1001] = { 0 };
+        dp[0] = 1;
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int t = 1; t <= target; t++ ) {
+                int q = min(k, t); ndp[t] = 0;
+                for ( int x = 1; x <= q; x++ )
+                    ndp[t] = ( ndp[t] + ( dp[t - x] % MOD ) ) % MOD;
+            }
+            memcpy(dp, ndp, 1001 * sizeof(int));
+        }
+        return ndp[target];
+    }
+
+    int numRollsToTargetDP(const int n, const int k, const int target) {
+        int dp[31][1001] = { 0 };
+        dp[0][0] = 1;
+
+        for ( int i = 1; i <= n; i++ ) {
+            for ( int t = 1; t <= target; t++ ) {
+                int ans = 0;
+                for ( int x = 1; x <= k; x++ ) {
+                    if ( t >= x ) ans = ( ans + ( dp[i - 1][t - x] % MOD ) ) % MOD;
+                }
+                dp[i][t] = ans;
+            }
+        }
+        return dp[n][target];
+    }
+
+    int numRollsToTargetRec(const int& n, const int& k, const int& target, vector<vector<int>>& memo) {
+        if ( n == 0 ) return ( target == 0 );
+        if ( memo[n][target] != -1 ) return memo[n][target];
+        int ans = 0;
+
+        for ( int x = 1; x <= k; x++ )
+            if ( target >= x ) ans = ( ans + ( numRollsToTargetRec(n - 1, k, target - x, memo) % MOD ) ) % MOD;
+        return memo[n][target] = ans;
+    }
+
+    int numRollsToTarget(int n, int k, int target) {
+        // vector<vector<int>> dp(n+1, vector<int>(target+1, -1));
+        // return numRollsToTargetRec(n, k, target, dp);
+        // return numRollsToTargetDP(n, k, target);
+        return numRollsToTargetDPSpace(n, k, target);
+    }
+};
+
+int main() {
+    Solution s;
+    cout << s.numRollsToTarget(1, 6, 3) << endl;
+    cout << s.numRollsToTarget(2, 6, 7) << endl;
+    cout << s.numRollsToTarget(2, 5, 10) << endl;
+    cout << s.numRollsToTarget(1, 2, 3) << endl;
+    cout << s.numRollsToTarget(30, 30, 500) << endl;
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+/*
+    LeetCode 279. Perfect Squares
+        Given an integer n, return the least number of perfect square numbers that sum to n.
+
+        We use a simple DFS approach to solve this problem. We start from n and subtract all the perfect squares less than n.
+        We take the minimum of all the possible combinations and return the result after adding 1.
+        The 1 is added to indicate that we have used one perfect square number in the current combination.
+
+        Time: O(n*sqrt(n)), Space: O(n)
+*/
+
+class Solution {
+public:
+    int numSquaresDP(int N) {
+        vector<int> dp(N + 1, 0);
+
+        for ( int n = 1; n <= N; n++ ) {
+            dp[n] = n;
+            for ( int i = 1; i * i <= n; i++ ) {
+                dp[n] = min(dp[n], dp[n - i * i]);
+            }
+            dp[n]++;
+        }
+
+        return dp[N];
+    }
+
+    int numSquaresRec(int n, vector<int>& dp) {
+        if ( n == 0 ) return 0;
+        if ( dp[n] != -1 ) return 1 + dp[n];
+
+        dp[n] = n;
+        for ( int i = 1; i * i <= n; i++ ) {
+            dp[n] = min(dp[n], numSquaresRec(n - i * i, dp));
+        }
+        return 1 + dp[n];
+    }
+
+    int numSquares(int n) {
+        // vector<int> dp(n+1, -1);
+        // return numSquaresRec(n, dp);
+        return numSquaresDP(n);
+    }
+};
+
+int main() {
+    Solution sol;
+    cout << sol.numSquares(12) << endl;
+    cout << sol.numSquares(13) << endl;
+    return 0;
+}#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Leetcode 1547. Minimum Cost to Cut a Stick
+        Given a wooden stick of length n units. The stick is labelled from 0 to n.
+        Cost of cutting the stick is equal to the length of the stick to be cut.
+        For example if you have stick of length 10, and you cut it at 4 into two
+            pieces of size 4 and 6, the cost for this is 10. Then if you cut the 6, it will cost another 6
+            So total cost is 10+6 = 16.
+
+        Given an array cuts where cuts[i] denotes a position you should perform a cut at, find the minimum cost to do all the cuts.
+        Cuts can be performed in any order, but all cuts must be performed.
+
+        Time Complexity: O(n^3), Space Complexity: O(n^2)
+*/
+
+
+class Solution {
+public:
+    int minCostDP(const vector<int>& cuts) {
+        int n = cuts.back(), c = cuts.size() - 2;
+        vector<vector<int>> dp(c + 2, vector<int>(c + 2, 0));
+        for ( int i = c; i >= 1; i-- ) {
+            for ( int j = i; j <= c; j++ ) {
+                dp[i][j] = 1e9;
+                for ( int k = i; k <= j; k++ )
+                    dp[i][j] = min(dp[i][k - 1] + dp[k + 1][j], dp[i][j]);
+                dp[i][j] += cuts[j + 1] - cuts[i - 1];
+            }
+        }
+        return dp[1][c];
+    }
+
+    int dfs(int i, int j, const vector<int>& cuts, unordered_map<int, unordered_map<int, int>>& dp) {
+        if ( i > j ) return 0;
+        if ( dp[i].count(j) ) return dp[i][j];
+
+        dp[i][j] = 1e9;
+        for ( int k = i; k <= j; k++ )
+            dp[i][j] = min(dfs(i, k - 1, cuts, dp) + dfs(k + 1, j, cuts, dp) + cuts[j + 1] - cuts[i - 1], dp[i][j]);
+        return dp[i][j];
+    }
+
+    int minCost(int n, vector<int>& cuts) {
+        cuts.push_back(n);
+        cuts.push_back(0);
+        sort(cuts.begin(), cuts.end());
+        // unordered_map<int, unordered_map<int, int>> mp;
+        // return dfs(1, cuts.size()-2, cuts, mp);
+        return minCostDP(cuts);
+    }
+};
+
+int main() {
+    Solution sol;
+    int n = 9;
+    vector<int> cuts = { 5,6,1,4,2 };
+    cout << sol.minCost(n, cuts) << endl;
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Matrix Chain Multiplication
+        A set of n-1 matrices are given in an array of size n.
+        Let them be A(p,q), B(q,r), C(r,s), D(s,t) where p,q,r,s,t are the dimensions of the matrices.
+        Then the array is {p,q,r,s,t} to represent the matrices {A,B,C,D}.
+        The cost of multiplying two matrices A(p,q) and B(q,r) is p*q*r, it is the number of multiplications required for matrix multiplication.
+
+        Find the minimum number of multiplications required to multiply all the matrices:
+        Example, A(10, 20),B(20, 30),C(30,40) are the matrices, then (AB)C, A(BC) are the two ways to multiply them.
+            For (AB)C:
+                The cost of AB is 10*20*30 = 6000 | AB(10,30)
+                The cost of (AB)C is 10*30*40 = 12000 | (AB)C(10,40)
+                Total cost = 6000 + 12000 = 18000
+            For A(BC):
+                The cost of BC is 20*30*40 = 24000 | BC(20,40)
+                The cost of A(BC) is 10*20*40 = 8000 | A(BC)(10,40)
+                Total cost = 24000 + 8000 = 32000
+            So, the minimum cost is 18000.
+
+        We are basically taking the minimum of every possible parition in the recursion.
+
+        In DP, we just go from bottom to top, and fill the table.
+        i.e i=n-1=>1 and j=i+1=>n
+
+        Answer is dp[1][n-1]
+
+        Time Complexity: O(n^3), Space Complexity: O(n^2)
+*/
+
+#define int long long
+class Solution {
+public:
+    int numberOfStepsDP(const vector<int>& arr) {
+        int n = arr.size();
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+        for ( int i = n - 1; i >= 1; i-- ) {
+            for ( int j = i + 1; j < n; j++ ) {
+                int mn = 1e9;
+                for ( int k = i; k < j; k++ )
+                    mn = min(arr[i - 1] * arr[k] * arr[j] + dp[k + 1][j] + dp[i][k], mn);
+                dp[i][j] = mn;
+            }
+        }
+        return dp[1][n - 1];
+    }
+
+    int dfs(int i, int j, const vector<int>& arr, vector<vector<int>>& dp) {
+        if ( i == j ) return 0;
+        if ( dp[i][j] != -1 ) return dp[i][j];
+
+        int mn = 1e9;
+        for ( int k = i; k < j; k++ )
+            mn = min(arr[i - 1] * arr[k] * arr[j] + dfs(k + 1, j, arr, dp)
+                + dfs(i, k, arr, dp), mn);
+
+        return dp[i][j] = mn;
+    }
+
+    int numberOfSteps(const vector<int>& arr) {
+        // int n = arr.size();
+        // vector<vector<int>> dp(n+1, vector<int>(n+1, -1));
+        // return dfs(1, n-1, arr, dp);
+        return numberOfStepsDP(arr);
+    }
+};
+
+signed main() {
+    Solution sl;
+    vector<int> arr = { 1, 2, 3, 4, 3 };
+    cout << sl.numberOfSteps(arr) << endl;
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+/*
+    Given a number n, find the number of integer partitions of n.
+        An integer partition of n is a way of writing n as a sum of positive integers.
+        For example, the integer partitions of 4 are:
+            [4], [3, 1], [2, 2], [2, 1, 1], [1, 1, 1, 1]
+        So the output for n = 4 would be 5.
+
+    Solution #1: Recursion
+        The base case is when n == 0, we have 1 way to get the target sum
+        If n < 0 or k == 0, we have 0 ways to get the target sum as we have exhausted all the numbers
+
+        The way to generate all possible combinations is to have two function calls:
+            1. One where we keep repeating the same component k while reducing n i.e n - k which means
+                using k again and again until we reach the target sum or exceed it
+            2. One where we move to the next number while keeping n same i.e k - 1
+
+        The answer is the sum of the two function calls.
+        Note that wasted function calls can be avoided by doing a check if n >= k before doing the first check,
+            this means the 2nd base case becomes simply `k == 0` instead of `k == 0 || n < 0`
+
+        Time: O(2^n), Space: O(n)
+
+    Solution #2: DP
+        Let DP[N][N]
+
+        DP[k][n] represents the number of ways to get the target sum n using numbers from 1 to k
+        We are switching position of k and n since since k follows k and k - 1, i.e current and previous rows
+            which is going to be useful in space optimization
+
+        Base Case is DP[k][0] = 1 for all k as we have 1 way to get the target sum 0 i.e by not using any number
+
+        For k = 1 to N
+            For n = 0 to N
+                DP[k][n] = DP[k - 1][n]
+                if n >= k
+                    DP[k][n] += DP[k][n - k]
+
+        The answer is DP[N][N]
+
+        Time: O(N^2), Space: O(N^2)
+
+    Solution #3: DP Space Optimization
+        Since we are using only k and k-1, we can use two 1D arrays to store the values of dp[k] and dp[k-1].
+        But if we look closer we can see that we will not change the previous values and will take them down as is,
+            hence a single 1D array is enough to store the values of dp[k] and dp[k-1]
+
+        Let DP[N]
+
+        Base Case is DP[0] = 1 as we have 1 way to get the target sum 0 i.e by not using any number
+
+        For k = 1 to N
+            For n = k to N
+                DP[n] += DP[n - k]
+
+        The answer is DP[N]
+
+        Time: O(N^2), Space: O(N)
+
+        Note: We are starting the loop for n from k to N to avoid the if condition and because the value just gets copied down
+            anyway.
+*/
+
+class Solution {
+    int numberOfIntegerPartitionsDPSpace( int N ) {
+        vector<int> dp( N + 1, 0 );
+        dp [ 0 ] = 1;
+
+        for ( int k = 1; k <= N; k++ ) {
+            for ( int n = k; n <= N; n++ ) {
+                dp [ n ] += dp [ n - k ];
+            }
+        }
+
+        return dp [ N ];
+    }
+
+    int numberOfIntegerPartitionsDP( int N ) {
+        vector<vector<int>> dp( N + 1, vector<int>( N + 1, 0 ) );
+        dp [ 0 ][ 0 ] = 1;
+
+        for ( int k = 1; k <= N; k++ ) {
+            for ( int n = 0; n <= N; n++ ) {
+                dp [ k ][ n ] = dp [ k - 1 ][ n ];
+                if ( n >= k ) dp [ k ][ n ] += dp [ k ][ n - k ];
+            }
+        }
+
+        return dp [ N ][ N ];
+    }
+
+    int numberOfIntegerPartitionsRec( int n, int k ) {
+        if ( n == 0 ) return 1;
+        if ( k == 0 ) return 0;
+
+        int stayK = 0, nextK = 0;
+        nextK = numberOfIntegerPartitionsRec( n, k - 1 );
+        if ( n >= k ) stayK = numberOfIntegerPartitionsRec( n - k, k );
+
+        return stayK + nextK;
+    }
+
+public:
+    int numberOfIntegerPartitions( int n ) {
+        return numberOfIntegerPartitionsDPSpace( n );
+    }
+};
+
+int main( ) {
+    Solution sol;
+    int n = 4;
+    cout << sol.numberOfIntegerPartitions( n ) << '\n';
+    return 0;
+}#include <bits/stdc++.h>
+
+using namespace std;
+
+class Solution {
+    int numberOfWaysParenthesisDP( const int n ) {
+        vector<vector<int>> DP( n + 1, vector<int>( n + 1, 0 ) );
+        for ( int i = 0; i <= n; i++ ) DP [ i ][ i ] = 1;
+
+        for ( int i = n - 1; i >= 0; i-- ) {
+            for ( int j = i + 1; j <= n; j++ ) {
+                for ( int k = i; k < j; k++ ) {
+                    DP [ i ][ j ] += DP [ i ][ k ] * DP [ k + 1 ][ j ];
+                }
+            }
+        }
+
+        return DP [ 0 ][ n ];
+    }
+
+    int numberOfWaysParenthesisRec( const int i, const int j ) {
+        if ( i == j ) return 1;
+
+        int ans = 0;
+        for ( int k = i; k < j; k++ ) {
+            ans += numberOfWaysParenthesisRec( i, k ) * numberOfWaysParenthesisRec( k + 1, j );
+        }
+
+        return ans;
+    }
+public:
+    int numberOfWaysParenthesis( int n ) {
+        return numberOfWaysParenthesisDP( n - 1 );
+    }
+};
+
+int main( ) {
+    Solution sol;
+    for ( int i = 1; i <= 5; i++ )
+        cout << i << '\t' << sol.numberOfWaysParenthesis( i ) << '\n';
+    return 0;
+}
